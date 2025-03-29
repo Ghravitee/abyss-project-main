@@ -26,7 +26,9 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Suspense
-        fallback={<LoadingScreen key="suspense-loading" isLoading={true} />}
+        fallback={
+          <LoadingScreen key="suspense-loading" isLoading={isLoading} />
+        }
       >
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
