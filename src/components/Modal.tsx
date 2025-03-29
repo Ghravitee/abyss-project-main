@@ -16,7 +16,7 @@ const Modal: React.FC<ModalProps> = ({ onClose }) => {
   const handleNavigate = () => {
     setLoading(true);
     setTimeout(() => {
-      window.location.href = "/dapp"; // Navigate to dApp
+      window.location.href = "/dapp";
     }, 3000);
   };
 
