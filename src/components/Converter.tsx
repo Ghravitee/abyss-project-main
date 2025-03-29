@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { JSX, useState } from "react";
 import swap from "../assets/swap.png";
 import { formatTokenAmount } from "@/web3/formatters";
-import { pureBidAmount, pureDecimals, pureSymbol, pureBidAmountUSDValue } from "@/web3/readContracts";
+import {
+  pureBidAmount,
+  pureDecimals,
+  pureSymbol,
+  pureBidAmountUSDValue,
+} from "@/web3/readContracts";
 
 type ConvertStatisticsProps = {
   isLoadingBidAmount: boolean;
@@ -10,8 +15,8 @@ type ConvertStatisticsProps = {
   decimals: bigint | number | undefined;
   symbol: string | undefined | any;
   bidAmountUSDValue: bigint | number | any;
+  bidButton: JSX.Element;
 };
-
 
 const Converter = ({
   isLoadingBidAmount,
@@ -20,6 +25,7 @@ const Converter = ({
   decimals,
   symbol,
   bidAmountUSDValue,
+  bidButton,
 }: ConvertStatisticsProps) => {
   const [isTokenToUSD, setIsTokenToUSD] = useState(true);
 
@@ -34,7 +40,7 @@ const Converter = ({
           {isLoadingBidAmount
             ? "Loading..."
             : (isConnected && formatTokenAmount(bidAmount, decimals)) ||
-            formatTokenAmount(pureBidAmount, pureDecimals)}{" "}
+              formatTokenAmount(pureBidAmount, pureDecimals)}{" "}
           {symbol || pureSymbol}
         </p>
       </div>
@@ -53,25 +59,19 @@ const Converter = ({
           $ USD
         </label>
         <p className="w-full p-5 pl-6 text-white border border-Purple focus:outline-none focus:ring-4 focus:ring-Purple/60 transition-shadow rounded-[40px] appearance-none bg-transparent">
-          ${isLoadingBidAmount
+          $
+          {isLoadingBidAmount
             ? "Loading..."
             : (isConnected &&
-              bidAmountUSDValue.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })) ||
-            pureBidAmountUSDValue}
+                bidAmountUSDValue.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })) ||
+              pureBidAmountUSDValue}
         </p>
       </div>
 
-      <div className="text-white uppercase flex flex-col space-y-4 font-medium text-[18px] mt-4">
-        <div className="cursor-pointer px-[12px] py-[10px] flex items-center justify-center rounded-[40px] bg-Purple hover:bg-Purple/50 ">
-          Place Bid
-        </div>
-        <div className="cursor-pointer px-[12px] py-[10px] flex items-center justify-center rounded-[40px] border border-HowTo-Cards-border hover:bg-Purple/50">
-          Approve Bid
-        </div>
-      </div>
+      <div className="mt-4 rounded-full mx-auto">{bidButton}</div>
     </form>
   );
 };

@@ -40,7 +40,7 @@ import {
   pureBurntTokens,
   pureLatestETHPrice_s,
   pureAbyssUSDPrice_s,
-  pureLastBidder
+  pureLastBidder,
 } from "@/web3/readContracts";
 
 function Dapp() {
@@ -320,7 +320,7 @@ function Dapp() {
       return (
         total +
         Number(entry.totalTokensBidded) /
-        Math.pow(10, decimals ? Number(decimals) : 18)
+          Math.pow(10, decimals ? Number(decimals) : 18)
       );
     }, 0);
   }, [leaderboard, decimals]);
@@ -331,7 +331,7 @@ function Dapp() {
       return (
         total +
         Number(entry.totalUSDBidded) /
-        Math.pow(10, decimals ? Number(decimals) : 18)
+          Math.pow(10, decimals ? Number(decimals) : 18)
       );
     }, 0);
   }, [leaderboard, decimals]);
@@ -631,12 +631,15 @@ function Dapp() {
             <div className="text-xl space-y-3">
               <p className="flex justify-between">
                 <span className="text-light-gray-1">Last Bidder:</span>
+
                 <span className="font-medium">
                   {isLoadingLastBidder
                     ? "Fetching..."
                     : isConnected
-                      ? lastBidder
-                      : pureLastBidder}
+                    ? `${lastBidder?.slice(0, 4)}...${lastBidder?.slice(-4)}`
+                    : `${pureLastBidder.slice(0, 4)}...${pureLastBidder.slice(
+                        -4
+                      )}`}
                 </span>
               </p>
             </div>
@@ -846,6 +849,14 @@ function Dapp() {
               className="bg-HowItWorks-Cards-Background border border-Purple rounded-2xl px-4 py-6 h-fit"
             >
               <MainHeading addon="text-[18px] md:text-[20px] lg:text-[24px]" />
+              {/* <Converter
+                isLoadingBidAmount={isLoadingBidAmount}
+                isConnected={isConnected}
+                bidAmount={bidAmount}
+                decimals={decimals}
+                symbol={symbol}
+                bidAmountUSDValue={bidAmountUSDValue}
+              /> */}
               <Converter
                 isLoadingBidAmount={isLoadingBidAmount}
                 isConnected={isConnected}
@@ -853,6 +864,34 @@ function Dapp() {
                 decimals={decimals}
                 symbol={symbol}
                 bidAmountUSDValue={bidAmountUSDValue}
+                bidButton={
+                  <button
+                    disabled={
+                      isPending ||
+                      isConfirming ||
+                      isLoadingAllowance ||
+                      isLoadingBidAmount ||
+                      isProcessingTxn ||
+                      isGameExpired
+                    }
+                    onClick={handleBidProcess}
+                    className={`cursor-pointer px-10 py-3 rounded-full font-bold text-[18px] transition-all duration-300 ease-in-out
+        ${
+          isGameExpired
+            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+            : "bg-Purple hover:bg-opacity-80 text-white"
+        }
+      `}
+                  >
+                    {isGameExpired ? (
+                      <>
+                        <span className="mr-2">🚫</span> {getButtonText()}
+                      </>
+                    ) : (
+                      getButtonText()
+                    )}
+                  </button>
+                }
               />
             </motion.div>
           </motion.div>
@@ -980,10 +1019,11 @@ function Dapp() {
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
               className={`px-6 py-3 rounded-xl font-bold text-[18px] transition-all duration-300 ease-in-out
-        ${isGameExpired
-                  ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-                  : "bg-Purple hover:bg-opacity-80 text-white"
-                }
+        ${
+          isGameExpired
+            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+            : "bg-Purple hover:bg-opacity-80 text-white"
+        }
       `}
             >
               {isGameExpired ? (
@@ -1033,8 +1073,8 @@ function Dapp() {
               {lastTxnType === "approval"
                 ? "Approval confirmed!"
                 : lastTxnType === "bid"
-                  ? "Bid confirmed!"
-                  : ""}
+                ? "Bid confirmed!"
+                : ""}
             </p>
             <p className="text-sm text-gray-300">Transaction: {txHash}</p>
           </motion.div>
@@ -1252,16 +1292,16 @@ function Dapp() {
           {isLoadingGetLatestETHPrice
             ? "Loading..."
             : (isConnected &&
-              (Number(getLatestETHPrice) / 10 ** 8).toFixed(2)) ||
-            pureLatestETHPrice_s}
+                (Number(getLatestETHPrice) / 10 ** 8).toFixed(2)) ||
+              pureLatestETHPrice_s}
         </p>
         <p>
           Abyss USD Price:${" "}
           {isLoadingGetAbyssUSDPrice
             ? "Loading..."
             : (isConnected &&
-              (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)) ||
-            pureAbyssUSDPrice_s}
+                (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)) ||
+              pureAbyssUSDPrice_s}
         </p>
 
         {/* round data */}
