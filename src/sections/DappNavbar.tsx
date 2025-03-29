@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import logo from "../assets/abyss-logo.png";
+import logo from "../assets/abyss-logo.webp";
 
 const DappNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,17 +1,55 @@
-import { motion } from "framer-motion";
+// const LoadingScreen = () => {
+//   return (
+//     <div className="fixed inset-0 flex items-center justify-center bg-black z-50">
+//       <div className="flex flex-col items-center justify-center ">
+//         <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+//         <div className="text-center text-white text-3xl font-bold mt-10">
+//           Loading...
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
-const LoadingScreen = () => {
-  return (
-    <motion.div
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 0 }}
-      exit={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-      className="fixed inset-0 flex items-center justify-center bg-black z-50"
-    >
-      <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-    </motion.div>
-  );
+// export default LoadingScreen;
+
+import { useState, CSSProperties } from "react";
+import CircleLoader from "react-spinners/CircleLoader";
+
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
 };
+
+function LoadingScreen() {
+  const [loading, setLoading] = useState(true);
+  const [color, setColor] = useState("#a510d6");
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black z-50">
+      {/* <button onClick={() => setLoading(!loading)}>Toggle Loader</button>
+      <input
+        value={color}
+        onChange={(input) => setColor(input.target.value)}
+        placeholder="Color of the loader"
+      /> */}
+
+      <div className="flex flex-col items-center justify-center ">
+        <CircleLoader
+          color={color}
+          loading={loading}
+          cssOverride={override}
+          size={150}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+        <p className="text-center text-Purple text-3xl font-bold mt-10">
+          Loading...
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default LoadingScreen;

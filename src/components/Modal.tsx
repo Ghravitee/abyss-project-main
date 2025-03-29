@@ -23,22 +23,27 @@ const Modal: React.FC<ModalProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/20 backdrop-blur-md z-50">
       {loading ? (
-        <div className="flex items-center justify-between bg-Dark-Purple w-[90%] lg:w-[30%] h-[60%] p-6 rounded-lg">
-          <img src={connectingLogo} alt="connectingLogo" />
+        <div className="relative flex flex-col justify-center bg-Dark-Purple w-[90%] lg:w-[30%] h-[60%] p-6 rounded-lg">
+          <div className="flex items-center justify-between mt-10">
+            <img src={connectingLogo} alt="connectingLogo" />
+            {/* Dotted line */}
+            <div className="w-full border-t-2 border-dotted border-white"></div>
+            <img src={check} alt="" />
+            {/* Dotted line */}
+            <div className="w-full border-t-2 border-dotted border-white"></div>
+            <img
+              src={metamask}
+              alt="metamask"
+              className="p-3 flex border border-white rounded-full"
+            />
+          </div>
 
-          {/* Dotted line */}
-          <div className="w-full border-t-2 border-dotted border-white"></div>
-
-          <img src={check} alt="" />
-
-          {/* Dotted line */}
-          <div className="w-full border-t-2 border-dotted border-white"></div>
-
-          <img
-            src={metamask}
-            alt="metamask"
-            className="p-3 flex border border-white rounded-full"
-          />
+          <a
+            href="/"
+            className="mx-auto mt-32 cursor-pointer bg-Purple text-white md:px-10 px-8 py-2 rounded-full flex hover:bg-opacity-90 transition items-center justify-center gap-2"
+          >
+            Return Home
+          </a>
         </div>
       ) : (
         <motion.div

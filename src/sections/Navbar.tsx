@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import Modal from "@/components/Modal";
 import { useAuth } from "@/lib/AuthContext";
-import logo from "../assets/abyss-logo.png";
+import logo from "../assets/abyss-logo.webp";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
