@@ -5,7 +5,7 @@ const HowItWorks = () => {
   return (
     <motion.section
       id="howitworks"
-      className="max-w-[1300px] mx-auto pt-[80px] pb-[80px] px-4 lg:px-0"
+      className="max-w-[1300px] mx-auto pb-[80px] px-4 lg:px-0"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}

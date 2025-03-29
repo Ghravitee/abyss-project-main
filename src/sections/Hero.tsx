@@ -10,11 +10,14 @@ const Hero = () => {
   const { isModalOpen, setIsModalOpen } = useAuth();
   return (
     <>
-      <section id="home" className="relative overflow-hidden pb-[80px]">
+      <section
+        id="home"
+        className="h-screen relative overflow-hidden] flex flex-col items-center justify-center"
+      >
         {/* Blurred Background Glow */}
         <div className="lg:size-[14rem] rounded-full bg-[#A510D6] absolute top-[200px] left-0 right-0 mx-auto blur-[150px]"></div>
 
-        <div className="myContainer pt-[88px] text-center px-6">
+        <div className="myContainer pt-[88px] text-center px-6 flex flex-col items-center justify-center">
           {/* Animated Title */}
           <MainHeading />
 
@@ -49,7 +52,7 @@ const Hero = () => {
           >
             <button
               onClick={() => setIsModalOpen(true)}
-              className="text-[1rem] font-semibold rounded-[40px] px-[40px] py-[16px] mx-auto w-fit flex items-center justify-center text-white bg-Purple cursor-pointer"
+              className="mt-8 text-[1rem] font-semibold rounded-[40px] px-[40px] py-[16px] mx-auto w-fit flex items-center justify-center text-white bg-Purple cursor-pointer"
             >
               Get Started
             </button>
@@ -59,13 +62,13 @@ const Hero = () => {
         {/* Floating Coins Animation */}
         <motion.img
           src={coin1}
-          className="absolute top-[80px] left-[20px]  sm:left-[30px] md:left-[50px] w-[80px] sm:size-[10rem] md:size-[12rem] lg:size-auto"
+          className="absolute top-[80px] left-[20px]  sm:left-[30px] md:left-[50px] w-[120px] sm:size-[10rem] md:size-[12rem] lg:size-auto"
           animate={{ y: [0, -10, 0] }}
           transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
         />
         <motion.img
           src={coin2}
-          className="absolute top-[80px] right-[20px] sm:right-[30px] md:right-[50px] w-[80px] sm:size-[10rem] md:size-[12rem] lg:size-auto"
+          className="absolute top-[80px] right-[20px] sm:right-[30px] md:right-[50px] w-[120px] sm:size-[10rem] md:size-[12rem] lg:size-auto"
           animate={{ y: [0, -10, 0] }}
           transition={{
             repeat: Infinity,

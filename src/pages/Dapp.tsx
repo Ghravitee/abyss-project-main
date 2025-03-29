@@ -641,6 +641,13 @@ function Dapp() {
                         -4
                       )}`}
                 </span>
+                {/* <span className="font-medium">
+                  {isLoadingLastBidder
+                    ? "Fetching..."
+                    : isConnected
+                    ? lastBidder
+                    : pureLastBidder}
+                </span> */}
               </p>
             </div>
           </div>

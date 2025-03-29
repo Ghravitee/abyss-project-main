@@ -56,7 +56,7 @@ const CountdownTimer = ({
       ${progress > 50 ? 255 - (progress - 50) * 5.1 : 255}, 
       ${progress > 50 ? 255 : progress * 5.1}, 
       0
-    )`, // Green → Yellow → Red
+    )`,
           textColor: "#fff",
           trailColor: "rgba(255, 255, 255, 0.02)",
           pathTransitionDuration: 1,
