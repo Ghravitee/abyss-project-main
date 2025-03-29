@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  --Purple: #a510d6;
+  --Light-Gray: #ecf1f0;
+  --Light-Gray-1: #b6b6b6;
+  --Dark-Purple: #15011c;
+  --HowItWorks-Cards-Background: #ffffff05;
+  --HowTo-Cards-Background: rgba(255, 255, 255, 0.02);
+  --HowTo-Cards-border: rgba(255, 255, 255, 0.05);
+  --color-cta-Background: rgba(255, 255, 255, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #a510d6;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@theme {
+  --color-Purple: #a510d6;
+  --color-Light-Gray: #ecf1f0;
+  --color-Dark-Purple: #15011c;
+  --color-Light-Gray-1: #b6b6b6;
+  --color-HowItWorks-Cards-Background: #ffffff05;
+  --color-HowTo-Cards-Background: rgba(255, 255, 255, 0.02);
+  --color-HowTo-Cards-border: rgba(255, 255, 255, 0.05);
+  --color-cta-Background: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  background-color: var(--color-Dark-Purple);
+  color: #ecf1f0;
+}
+
+.font-raleway {
+  font-family: "Raleway", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.myContainer {
+  max-width: 1300px;
+  margin-inline: auto;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
