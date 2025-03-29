@@ -1,18 +1,3 @@
-// const LoadingScreen = () => {
-//   return (
-//     <div className="fixed inset-0 flex items-center justify-center bg-black z-50">
-//       <div className="flex flex-col items-center justify-center ">
-//         <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-//         <div className="text-center text-white text-3xl font-bold mt-10">
-//           Loading...
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default LoadingScreen;
-
 import { useState, CSSProperties } from "react";
 import CircleLoader from "react-spinners/CircleLoader";
 
