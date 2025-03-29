@@ -19,7 +19,7 @@ function AnimatedRoutes() {
 
   useEffect(() => {
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 2000); // Adjust time for smoother transition
+    const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
