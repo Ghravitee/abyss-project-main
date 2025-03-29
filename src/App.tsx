@@ -14,7 +14,7 @@ const Dapp = lazy(() => import("./pages/Dapp"));
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
+  const setIsLoading = useState(true)[1];
 
   useEffect(() => {
     // Simulate page loading delay (replace with your actual loading logic)
@@ -26,9 +26,7 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Suspense
-        fallback={
-          <LoadingScreen key="suspense-loading" isLoading={isLoading} />
-        }
+        fallback={<LoadingScreen key="suspense-loading" isLoading={true} />}
       >
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
