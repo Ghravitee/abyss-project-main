@@ -1177,6 +1177,7 @@ function Dapp() {
                         </tr>
                       </thead>
                       <tbody>
+                        {/*  */}
                         {pureLeaderboard.map((entry, index) => {
                           const formattedEntry = formatLeaderboardEntry(entry);
                           return (
