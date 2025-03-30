@@ -44,7 +44,7 @@ const CountdownTimer = ({
   const seconds = String(countdown % 60).padStart(2, "0");
 
   // Calculate progress (percentage)
-  const progress = (countdown / totalTime) * 100;
+  const progress = countdown === 0 ? 100 : (countdown / totalTime) * 100;
 
   return (
     <div className="relative w-full h-full mx-auto">
@@ -52,11 +52,12 @@ const CountdownTimer = ({
         value={progress}
         strokeWidth={10}
         styles={buildStyles({
-          pathColor: `rgb(
-      ${progress > 50 ? 255 - (progress - 50) * 5.1 : 255}, 
-      ${progress > 50 ? 255 : progress * 5.1}, 
-      0
-    )`,
+          pathColor:
+            countdown === 0
+              ? "rgb(255, 0, 0)" // Full and red when time is up
+              : `rgb(${progress > 50 ? 255 - (progress - 50) * 5.1 : 255}, 
+               ${progress > 50 ? 255 : progress * 5.1}, 
+               0)`,
           textColor: "#fff",
           trailColor: "rgba(255, 255, 255, 0.02)",
           pathTransitionDuration: 1,

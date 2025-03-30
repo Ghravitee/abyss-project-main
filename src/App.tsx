@@ -14,7 +14,7 @@ const Dapp = lazy(() => import("./pages/Dapp"));
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const setIsLoading = useState(true)[1];
+  const [, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Simulate page loading delay (replace with your actual loading logic)
