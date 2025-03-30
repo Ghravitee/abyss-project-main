@@ -5,8 +5,8 @@ import { statsCards } from "../constants/statscards";
 import {
   pureTotalBidCount,
   totalPlayersCount,
-  overallTokensBidded,
-  overallUSDBidded,
+  pureOverallTokensBidded,
+  pureOverallUSDBidded,
   pureBurntTokens,
   purePrizeThreshold,
   pureTimeRemaining,
@@ -44,7 +44,7 @@ const Statistics = ({}: StatisticsProps) => {
           <StatsCard
             cardImage={statsCards[4].cardImage}
             title="Total Pot Value (ABYSS)"
-            description={overallTokensBidded.toLocaleString(undefined, {
+            description={pureOverallTokensBidded.toLocaleString(undefined, {
               minimumFractionDigits: 4,
               maximumFractionDigits: 4,
             })}
@@ -93,7 +93,7 @@ const Statistics = ({}: StatisticsProps) => {
           <StatsCard
             cardImage={statsCards[1].cardImage}
             title="Total Pot Value (USD)"
-            description={`$${overallUSDBidded.toLocaleString(undefined, {
+            description={`$${pureOverallUSDBidded.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}`}

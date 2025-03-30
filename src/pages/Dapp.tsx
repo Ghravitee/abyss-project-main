@@ -21,6 +21,7 @@ import {
   formatLeaderboardEntry,
   formatRoundWinner,
   formatTokenAmount,
+  divideFunct,
 } from "@/web3/formatters";
 import { motion } from "framer-motion";
 import DappNavbar from "@/sections/DappNavbar";
@@ -41,6 +42,12 @@ import {
   pureLatestETHPrice_s,
   pureAbyssUSDPrice_s,
   pureLastBidder,
+  pureLeaderboard,
+  pureOverallTokensBidded,
+  pureOverallUSDBidded,
+  totalPlayersCount,
+  pureTotalBidCount,
+  pureSymbol,
 } from "@/web3/readContracts";
 
 function Dapp() {
@@ -319,8 +326,8 @@ function Dapp() {
     return leaderboard.reduce((total, entry) => {
       return (
         total +
-        Number(entry.totalTokensBidded) /
-          Math.pow(10, decimals ? Number(decimals) : 18)
+        divideFunct(95, Number(entry.totalTokensBidded) /
+          Math.pow(10, decimals ? Number(decimals) : 18))
       );
     }, 0);
   }, [leaderboard, decimals]);
@@ -331,7 +338,7 @@ function Dapp() {
       return (
         total +
         Number(entry.totalUSDBidded) /
-          Math.pow(10, decimals ? Number(decimals) : 18)
+        Math.pow(10, decimals ? Number(decimals) : 18)
       );
     }, 0);
   }, [leaderboard, decimals]);
@@ -636,18 +643,11 @@ function Dapp() {
                   {isLoadingLastBidder
                     ? "Fetching..."
                     : isConnected
-                    ? `${lastBidder?.slice(0, 4)}...${lastBidder?.slice(-4)}`
-                    : `${pureLastBidder.slice(0, 4)}...${pureLastBidder.slice(
+                      ? `${lastBidder?.slice(0, 4)}...${lastBidder?.slice(-4)}`
+                      : `${pureLastBidder.slice(0, 4)}...${pureLastBidder.slice(
                         -4
                       )}`}
                 </span>
-                {/* <span className="font-medium">
-                  {isLoadingLastBidder
-                    ? "Fetching..."
-                    : isConnected
-                    ? lastBidder
-                    : pureLastBidder}
-                </span> */}
               </p>
             </div>
           </div>
@@ -856,14 +856,6 @@ function Dapp() {
               className="bg-HowItWorks-Cards-Background border border-Purple rounded-2xl px-4 py-6 h-fit"
             >
               <MainHeading addon="text-[18px] md:text-[20px] lg:text-[24px]" />
-              {/* <Converter
-                isLoadingBidAmount={isLoadingBidAmount}
-                isConnected={isConnected}
-                bidAmount={bidAmount}
-                decimals={decimals}
-                symbol={symbol}
-                bidAmountUSDValue={bidAmountUSDValue}
-              /> */}
               <Converter
                 isLoadingBidAmount={isLoadingBidAmount}
                 isConnected={isConnected}
@@ -883,11 +875,10 @@ function Dapp() {
                     }
                     onClick={handleBidProcess}
                     className={`cursor-pointer px-10 py-3 rounded-full font-bold text-[18px] transition-all duration-300 ease-in-out
-        ${
-          isGameExpired
-            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-            : "bg-Purple hover:bg-opacity-80 text-white"
-        }
+        ${isGameExpired
+                        ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                        : "bg-Purple hover:bg-opacity-80 text-white"
+                      }
       `}
                   >
                     {isGameExpired ? (
@@ -899,216 +890,459 @@ function Dapp() {
                     )}
                   </button>
                 }
+
+
               />
+              {/* Transaction Status Messages */}
+              {
+                isConfirming && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-HowItWorks-Cards-Background border-l-4 border-yellow-500 text-yellow-400 px-4 py-2 rounded-lg shadow-md text-center"
+                  >
+                    <p>⏳ Waiting for confirmation...</p>
+                    <p className="text-sm text-gray-300">Transaction: {txHash}</p>
+                  </motion.div>
+                )
+              }
+
+              {
+                isConfirmed && txHash && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-HowItWorks-Cards-Background border-l-4 border-green-500 text-green-400 px-4 py-2 rounded-lg shadow-md text-center"
+                  >
+                    <p>
+                      {lastTxnType === "approval"
+                        ? "Approval confirmed!"
+                        : lastTxnType === "bid"
+                          ? "Bid confirmed!"
+                          : ""}
+                    </p>
+                    <p className="text-sm text-gray-300">Transaction: {txHash}</p>
+                  </motion.div>
+                )
+              }
+
+              {/* Error Messages */}
+              {
+                errorMsg && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-HowItWorks-Cards-Background border-l-4 border-red-500 text-red-400 px-4 py-2 rounded-lg shadow-md text-center"
+                  >
+                    {errorMsg}
+                  </motion.div>
+                )
+              }
+
+              {
+                error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-HowItWorks-Cards-Background border-l-4 border-red-500 text-red-400 px-4 py-2 rounded-lg shadow-md text-center"
+                  >
+                    Error: {(error as BaseError).shortMessage || error.message}
+                  </motion.div>
+                )
+              }
             </motion.div>
           </motion.div>
         )}
 
-        {/* <Leaderboard leaderboard={leaderboard} /> */}
-        {isLoadingLeaderboard ? (
-          <p className="text-left font-raleway text-2xl text-Light-Gray my-4">
-            Loading leaderboard...
-          </p>
-        ) : leaderboard && leaderboard.length > 0 ? (
-          <>
-            {/* Leaderboard Table */}
-            <div className="max-w-[1300px] mx-auto border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar mt-20">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
-                    <th className="p-2 md:p-3">Rank</th>
-                    <th className="p-2 md:p-3">Player</th>
-                    <th className="p-2 md:p-3">Total Bids</th>
-                    <th className="p-2 md:p-3">Total Tokens Bidded</th>
-                    <th className="p-2 md:p-3">Total USD Bidded</th>
-                    <th className="p-2 md:p-3">First Bid</th>
-                    <th className="p-2 md:p-3">Last Bid</th>
-                    <th className="p-2 md:p-3">First Bid Amount</th>
-                    <th className="p-2 md:p-3">Last Bid Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaderboard.map((entry, index) => {
-                    const formattedEntry = formatLeaderboardEntry(entry);
-                    return (
-                      <motion.tr
-                        key={entry.player}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="text-white border-b border-HowTo-Cards-border text-left text-[14px] md:text-[16px]"
-                      >
-                        <td className="p-2 md:p-3">{index + 1}</td>
-                        <td className="p-2 md:p-3 text-Purple">
-                          {formattedEntry.player}
-                        </td>
-                        <td className="p-2 md:p-3">
-                          {formattedEntry.totalBids}
-                        </td>
-                        <td className="p-2 md:p-3">
-                          {formattedEntry.totalTokensBidded} {symbol}
-                        </td>
-                        <td className="p-2 md:p-3">
-                          ${formattedEntry.totalUSDBidded}
-                        </td>
-                        <td className="p-2 md:p-3">
-                          {formattedEntry.firstBidTimestamp}
-                        </td>
-                        <td className="p-2 md:p-3">
-                          {formattedEntry.lastBidTimestamp}
-                        </td>
-                        <td className="p-2 md:p-3">
-                          {formattedEntry.firstBidAmount} {symbol}
-                        </td>
-                        <td className="p-2 md:p-3">
-                          {formattedEntry.lastBidAmount} {symbol}
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
 
-            {/* Overall Totals Section */}
-            <div className="mt-6 border border-HowTo-Cards-border rounded-md p-4">
-              <h4 className="text-Light-Gray-1 font-bold text-lg">
-                Overall Totals
-              </h4>
-              <p className="text-white mt-2">
-                Total Tokens Bidded:{" "}
-                <span className="text-Purple font-bold">
-                  {overallTokensBidded.toLocaleString(undefined, {
-                    minimumFractionDigits: 4,
-                    maximumFractionDigits: 4,
-                  })}{" "}
-                  {symbol}
-                </span>
-              </p>
-              <p className="text-white">
-                Total USD Bidded:{" "}
-                <span className="text-Purple font-bold">
-                  $
-                  {overallUSDBidded.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-              </p>
-            </div>
-          </>
-        ) : (
-          <p className="text-left font-raleway text-2xl text-Light-Gray mb-4 mt-20">
-            No leaderboard entries found.
-          </p>
-        )}
 
-        {/* When the game is active, show the ready to play cards */}
-        {/* When the game is active, show the ready to play cards */}
-        {/* When the game is active, show the ready to play cards */}
-        {!isLoadingGameActive && gameActive && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="relative flex flex-col items-center gap-4"
-          >
-            <button
-              disabled={
-                isPending ||
-                isConfirming ||
-                isLoadingAllowance ||
-                isLoadingBidAmount ||
-                isProcessingTxn ||
-                isGameExpired
-              }
-              onClick={handleBidProcess}
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-              className={`px-6 py-3 rounded-xl font-bold text-[18px] transition-all duration-300 ease-in-out
-        ${
-          isGameExpired
-            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-            : "bg-Purple hover:bg-opacity-80 text-white"
-        }
-      `}
-            >
-              {isGameExpired ? (
+        <div className="bg-dark-purple text-light-gray p-4 lg:pt-6 lg:px-6 rounded-lg">
+          <div className="bg-HowTo-Cards-Background border border-Purple rounded-lg p-6 w-full mx-auto">
+            <h3 className="text-2xl font-bold text-Light-Gray text-left mb-4">
+              LeaderBoard
+            </h3>
+          </div>
+          <span className="font-medium">
+            {
+              isLoadingLeaderboard ? (
+                <p className="text-left font-raleway text-2xl text-Light-Gray my-4">
+                  Loading leaderboard...
+                </p>
+              ) : isConnected && leaderboard && leaderboard.length > 0 ? (
+
                 <>
-                  <span className="mr-2">🚫</span> {getButtonText()}
-                </>
-              ) : (
-                getButtonText()
-              )}
-            </button>
+                  <div className="max-w-[1300px] mx-auto border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar mt-20">
 
-            {/* Tooltip for Expired Game */}
-            {isGameExpired && showTooltip && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute top-[110%] bg-DarkGray text-white text-sm px-3 py-2 rounded-md shadow-lg"
+                    {/* Overall Totals Section */}
+                    <div className="mt-6 border border-HowTo-Cards-border rounded-md p-4">
+                      <h4 className="text-Light-Gray-1 font-bold text-lg">
+                        Overall Totals
+                      </h4>
+                      <p className="text-white mt-2">
+                        Total Tokens Bidded:{" "}
+                        <span className="text-Purple font-bold">
+                          {overallTokensBidded.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}{" "}
+                          {symbol}
+                        </span>
+                      </p>
+                      <p className="text-white">
+                        Total USD Bidded:{" "}
+                        <span className="text-Purple font-bold">
+                          $
+                          {overallUSDBidded.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </p>
+                      <p className="text-white mt-2">
+                        Total Tokens Burnt:{" "}
+                        <span className="text-Purple font-bold">
+                          {isLoadingTokenBurnt ? (
+                            'fetching...'
+                          ) : (
+                            (isConnected && (
+                              burntTokens.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
+                            ))
+                          )}
+                          {" "}{symbol}
+                        </span>
+                      </p>
+                      <p className="text-white">
+                        Total USD Burnt:{" "}
+                        <span className="text-Purple font-bold">
+                          $
+                          {isConnected && burntTokensUSDValue.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </p>
+                      <p className="text-white mt-2">
+                        Total Bids:{" "}
+                        <span className="text-Purple font-bold">
+                          {Number(getTotalBidCount?.toLocaleString())}
+                        </span>
+                      </p>
+                      <p className="text-white">
+                        Total Players:{" "}
+                        <span className="text-Purple font-bold">
+                          {totalPlayersCount}
+                        </span>
+                      </p>
+                    </div>
+                    {/* LeaderBoard */}
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                          <th className="p-2 md:p-3">Rank</th>
+                          <th className="p-2 md:p-3">Player</th>
+                          <th className="p-2 md:p-3">Total Bids</th>
+                          <th className="p-2 md:p-3">Total Tokens Bidded</th>
+                          <th className="p-2 md:p-3">Total USD Bidded</th>
+                          <th className="p-2 md:p-3">First Bid</th>
+                          <th className="p-2 md:p-3">Last Bid</th>
+                          <th className="p-2 md:p-3">First Bid Amount</th>
+                          <th className="p-2 md:p-3">Last Bid Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leaderboard.map((entry, index) => {
+                          const formattedEntry = formatLeaderboardEntry(entry);
+                          return (
+                            <motion.tr
+                              key={entry.player}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="text-white border-b border-HowTo-Cards-border text-left text-[14px] md:text-[16px]"
+                            >
+                              <td className="p-2 md:p-3">{index + 1}</td>
+                              <td className="p-2 md:p-3 text-Purple">
+                                {formattedEntry.player}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalBids}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalTokensBidded} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                ${formattedEntry.totalUSDBidded}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidAmount} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidAmount} {symbol}
+                              </td>
+                            </motion.tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : pureLeaderboard && pureLeaderboard.length > 0 ? (
+                <>
+                  {/* Pure Overall Totals Section */}
+                  <div className="mt-6 border border-HowTo-Cards-border rounded-md p-4">
+                    <h4 className="text-Light-Gray-1 font-bold text-lg">
+                      Overall Totals
+                    </h4>
+                    <p className="text-white mt-2">
+                      Total Tokens Bidded:{" "}
+                      <span className="text-Purple font-bold">
+                        {pureOverallTokensBidded.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{" "}
+                        {pureSymbol}
+                      </span>
+                    </p>
+                    <p className="text-white">
+                      Total USD Bidded:{" "}
+                      <span className="text-Purple font-bold">
+                        $
+                        {pureOverallUSDBidded.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </p>
+                    <p className="text-white mt-2">
+                      Total Tokens Burnt:{" "}
+                      <span className="text-Purple font-bold">
+                        {pureBurntTokens.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{" "}
+                        {pureSymbol}
+                      </span>
+                    </p>
+                    <p className="text-white">
+                      Total USD Burnt:{" "}
+                      <span className="text-Purple font-bold">
+                        $
+                        {pureBurntTokensUSDValue.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                    </p>
+                    <p className="text-white mt-2">
+                      Total Bids:{" "}
+                      <span className="text-Purple font-bold">
+                        {Number(pureTotalBidCount?.toLocaleString())}
+                      </span>
+                    </p>
+                    <p className="text-white">
+                      Total Players:{" "}
+                      <span className="text-Purple font-bold">
+                        {totalPlayersCount}
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Pure LeaderBoard */}
+                  <div className="max-w-[1300px] mx-auto border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar mt-20">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                          <th className="p-2 md:p-3">Rank</th>
+                          <th className="p-2 md:p-3">Player</th>
+                          <th className="p-2 md:p-3">Total Bids</th>
+                          <th className="p-2 md:p-3">Total Tokens Bidded</th>
+                          <th className="p-2 md:p-3">Total USD Bidded</th>
+                          <th className="p-2 md:p-3">First Bid</th>
+                          <th className="p-2 md:p-3">Last Bid</th>
+                          <th className="p-2 md:p-3">First Bid Amount</th>
+                          <th className="p-2 md:p-3">Last Bid Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pureLeaderboard.map((entry, index) => {
+                          const formattedEntry = formatLeaderboardEntry(entry);
+                          return (
+                            <motion.tr
+                              key={entry.player}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="text-white border-b border-HowTo-Cards-border text-left text-[14px] md:text-[16px]"
+                            >
+                              <td className="p-2 md:p-3">{index + 1}</td>
+                              <td className="p-2 md:p-3 text-Purple">
+                                {formattedEntry.player}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalBids}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalTokensBidded} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                ${formattedEntry.totalUSDBidded}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidAmount} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidAmount} {symbol}
+                              </td>
+                            </motion.tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>) : (
+                <p className="text-left font-raleway text-2xl text-Light-Gray mb-4 mt-20">
+                  No leaderboard entries found.
+                </p>)
+            }
+          </span>
+        </div>
+
+
+
+        {/* When the game is active, show the ready to play cards */}
+        {/* When the game is active, show the ready to play cards */}
+        {/* When the game is active, show the ready to play cards */}
+        {
+          !isLoadingGameActive && gameActive && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="relative flex flex-col items-center gap-4"
+            >
+              <button
+                disabled={
+                  isPending ||
+                  isConfirming ||
+                  isLoadingAllowance ||
+                  isLoadingBidAmount ||
+                  isProcessingTxn ||
+                  isGameExpired
+                }
+                onClick={handleBidProcess}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                className={`px-6 py-3 rounded-xl font-bold text-[18px] transition-all duration-300 ease-in-out
+        ${isGameExpired
+                    ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                    : "bg-Purple hover:bg-opacity-80 text-white"
+                  }
+      `}
               >
-                Current round expired
-              </motion.div>
-            )}
-          </motion.div>
-        )}
+                {isGameExpired ? (
+                  <>
+                    <span className="mr-2">🚫</span> {getButtonText()}
+                  </>
+                ) : (
+                  getButtonText()
+                )}
+              </button>
+
+              {/* Tooltip for Expired Game */}
+              {isGameExpired && showTooltip && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute top-[110%] bg-DarkGray text-white text-sm px-3 py-2 rounded-md shadow-lg"
+                >
+                  Current round expired
+                </motion.div>
+              )}
+            </motion.div>
+          )
+        }
 
         {/* Transaction Status Messages */}
-        {isConfirming && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-HowItWorks-Cards-Background border-l-4 border-yellow-500 text-yellow-400 px-4 py-2 rounded-lg shadow-md text-center"
-          >
-            <p>⏳ Waiting for confirmation...</p>
-            <p className="text-sm text-gray-300">Transaction: {txHash}</p>
-          </motion.div>
-        )}
+        {
+          isConfirming && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-HowItWorks-Cards-Background border-l-4 border-yellow-500 text-yellow-400 px-4 py-2 rounded-lg shadow-md text-center"
+            >
+              <p>⏳ Waiting for confirmation...</p>
+              <p className="text-sm text-gray-300">Transaction: {txHash}</p>
+            </motion.div>
+          )
+        }
 
-        {isConfirmed && txHash && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-HowItWorks-Cards-Background border-l-4 border-green-500 text-green-400 px-4 py-2 rounded-lg shadow-md text-center"
-          >
-            <p>
-              {lastTxnType === "approval"
-                ? "Approval confirmed!"
-                : lastTxnType === "bid"
-                ? "Bid confirmed!"
-                : ""}
-            </p>
-            <p className="text-sm text-gray-300">Transaction: {txHash}</p>
-          </motion.div>
-        )}
+        {
+          isConfirmed && txHash && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-HowItWorks-Cards-Background border-l-4 border-green-500 text-green-400 px-4 py-2 rounded-lg shadow-md text-center"
+            >
+              <p>
+                {lastTxnType === "approval"
+                  ? "Approval confirmed!"
+                  : lastTxnType === "bid"
+                    ? "Bid confirmed!"
+                    : ""}
+              </p>
+              <p className="text-sm text-gray-300">Transaction: {txHash}</p>
+            </motion.div>
+          )
+        }
 
         {/* Error Messages */}
-        {errorMsg && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-HowItWorks-Cards-Background border-l-4 border-red-500 text-red-400 px-4 py-2 rounded-lg shadow-md text-center"
-          >
-            {errorMsg}
-          </motion.div>
-        )}
+        {
+          errorMsg && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-HowItWorks-Cards-Background border-l-4 border-red-500 text-red-400 px-4 py-2 rounded-lg shadow-md text-center"
+            >
+              {errorMsg}
+            </motion.div>
+          )
+        }
 
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-HowItWorks-Cards-Background border-l-4 border-red-500 text-red-400 px-4 py-2 rounded-lg shadow-md text-center"
-          >
-            Error: {(error as BaseError).shortMessage || error.message}
-          </motion.div>
-        )}
+        {
+          error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-HowItWorks-Cards-Background border-l-4 border-red-500 text-red-400 px-4 py-2 rounded-lg shadow-md text-center"
+            >
+              Error: {(error as BaseError).shortMessage || error.message}
+            </motion.div>
+          )
+        }
 
         {/* Round Data */}
         {/* Round Data */}
@@ -1287,7 +1521,7 @@ function Dapp() {
             )}
           </div>
         </div>
-      </div>
+      </div >
 
       {/* Theo's web3 code */}
       {/* Theo's web3 code */}
@@ -1299,16 +1533,16 @@ function Dapp() {
           {isLoadingGetLatestETHPrice
             ? "Loading..."
             : (isConnected &&
-                (Number(getLatestETHPrice) / 10 ** 8).toFixed(2)) ||
-              pureLatestETHPrice_s}
+              (Number(getLatestETHPrice) / 10 ** 8).toFixed(2)) ||
+            pureLatestETHPrice_s}
         </p>
         <p>
           Abyss USD Price:${" "}
           {isLoadingGetAbyssUSDPrice
             ? "Loading..."
             : (isConnected &&
-                (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)) ||
-              pureAbyssUSDPrice_s}
+              (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)) ||
+            pureAbyssUSDPrice_s}
         </p>
 
         {/* round data */}
@@ -1564,105 +1798,8 @@ function Dapp() {
             )}
           </div>
         </div>
-        <div className="leaderboard">
-          <h3>Leaderboard</h3>
-          {isLoadingLeaderboard ? (
-            <p>Loading leaderboard...</p>
-          ) : leaderboard && leaderboard.length > 0 ? (
-            <>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Total Bids</th>
-                    <th>Total Tokens Bidded</th>
-                    <th>Total USD Bidded</th>
-                    <th>First Bid</th>
-                    <th>Last Bid</th>
-                    <th>First Bid Amount</th>
-                    <th>Last Bid Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaderboard.map((entry, index) => {
-                    const formattedEntry = formatLeaderboardEntry(entry);
-                    return (
-                      <tr key={entry.player}>
-                        <td>{index + 1}</td>
-                        <td>{formattedEntry.player}</td>
-                        <td>{formattedEntry.totalBids}</td>
-                        <td>
-                          {formattedEntry.totalTokensBidded} {symbol}
-                        </td>
-                        <td>${formattedEntry.totalUSDBidded}</td>
-                        <td>{formattedEntry.firstBidTimestamp}</td>
-                        <td>{formattedEntry.lastBidTimestamp}</td>
-                        <td>
-                          {formattedEntry.firstBidAmount} {symbol}
-                        </td>
-                        <td>
-                          {formattedEntry.lastBidAmount} {symbol}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              {/* Overall Totals Section */}
-              <div className="overall-totals" style={{ marginTop: "1rem" }}>
-                <h4>Overall Totals</h4>
-                <p>
-                  Total Tokens Bidded:{" "}
-                  {overallTokensBidded.toLocaleString(undefined, {
-                    minimumFractionDigits: 4,
-                    maximumFractionDigits: 4,
-                  })}{" "}
-                  {symbol}
-                </p>
-                <p>
-                  Total USD Bidded: $
-                  {overallUSDBidded.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-              </div>
-            </>
-          ) : (
-            <p>No leaderboard entries found.</p>
-          )}
-        </div>
-        <div className="burnt-tokens-info">
-          <h3>Overall Tokens Burnt</h3>
-          {isLoadingTokenBurnt ? (
-            <p>Loading burnt tokens...</p>
-          ) : (
-            (isConnected && (
-              <p>
-                {burntTokens.toLocaleString(undefined, {
-                  minimumFractionDigits: 4,
-                  maximumFractionDigits: 4,
-                })}{" "}
-                {symbol}
-              </p>
-            )) ||
-            pureBurntTokens
-          )}
-          <h4>Overall Burnt Tokens USD Value</h4>
-
-          <p>
-            $
-            {(isConnected &&
-              burntTokensUSDValue.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })) ||
-              pureBurntTokensUSDValue}
-          </p>
-        </div>
       </div>
-    </div>
+    </div >
   );
 }
 
