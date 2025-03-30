@@ -30,18 +30,18 @@ export const pureBidAmount = await publicClient.readContract({
     functionName: "bidAmount",
 });
 
-const pureLeaderboard = await publicClient.readContract({
+export const pureLeaderboard = await publicClient.readContract({
     ...POT_ABI,
     functionName: "getLeaderboard",
 });
 
-export const overallTokensBidded = pureLeaderboard
+export const pureOverallTokensBidded = pureLeaderboard
     ? pureLeaderboard.reduce((total, entry) => {
         return total + divideFunct(95, Number(entry.totalTokensBidded) / Math.pow(10, Number(pureDecimals || 18)));
     }, 0)
     : 0;
 
-export const overallUSDBidded = pureLeaderboard
+export const pureOverallUSDBidded = pureLeaderboard
     ? pureLeaderboard.reduce((total, entry) => {
         return total + Number(entry.totalUSDBidded) / Math.pow(10, Number(pureDecimals || 18));
     }, 0)
