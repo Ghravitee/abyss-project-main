@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 type StatsCardProps = {
   cardImage: string;
   title: string;
-  description: string | number | bigint | JSX.Element;
+  description: string | number | bigint | JSX.Element | undefined;
   loading?: boolean;
 };
 
