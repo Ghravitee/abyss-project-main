@@ -1,9 +1,10 @@
+import { JSX } from "react";
 import { motion } from "framer-motion";
 
 type StatsCardProps = {
   cardImage: string;
   title: string;
-  description: string | number | bigint | undefined;
+  description: string | number | bigint | JSX.Element;
   loading?: boolean;
 };
 
