@@ -67,7 +67,7 @@ function Dapp() {
   const [searchAddress, setSearchAddress] = useState("");
   const [startDateTime, setStartDateTime] = useState("");
   const [endDateTime, setEndDateTime] = useState("");
-  const [activeTab, setActiveTab] = useState("tab2");
+  const [activeTab, setActiveTab] = useState("tab1");
 
   // const chainId = useChainId();
   // const isSepoliaTestnet = chainId === testChainID;
@@ -955,7 +955,266 @@ function Dapp() {
 
         <div className="bg-Purple my-[50px] w-full h-[1px]" />
 
-        {/*  */}
+        <div className=" p-4 lg:pt-6 rounded-lg">
+          <h3 className="text-2xl lg:text-[32px] font-bold text-Light-Gray text-left mb-4 uppercase">
+            LeaderBoard History
+          </h3>
+
+          <span className="font-medium">
+            {isLoadingLeaderboard ? (
+              <span className="h-5 w-20 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+            ) : isConnected && leaderboard && leaderboard.length > 0 ? (
+              <>
+                <div className=" overflow-x-auto custom-scrollbar ">
+                  {/* Overall Totals Section */}
+                  <div className="max-w-[40rem] mx-auto mt-6 border border-HowTo-Cards-border rounded-md p-4 mb-6">
+                    <h4 className="text-white font-bold text-xl lg:text-3xl border-b border-HowTo-Cards-border text-center">
+                      Overall Totals
+                    </h4>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white mt-2">Total Tokens Bidded: </p>
+                      <p className="text-Purple font-bold">
+                        {overallTokensBidded.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{" "}
+                        {symbol}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white">Total USD Bidded: </p>
+                      <p className="text-Purple font-bold">
+                        $
+                        {overallUSDBidded.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white mt-2">Total Tokens Burnt: </p>
+                      <p className="text-Purple font-bold">
+                        {isLoadingTokenBurnt
+                          ? "fetching..."
+                          : isConnected &&
+                            burntTokens.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}{" "}
+                        {symbol}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white">Total USD Burnt: </p>
+                      <p className="text-Purple font-bold">
+                        $
+                        {isConnected &&
+                          burntTokensUSDValue.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white mt-2">Total Bids: </p>
+                      <p className="text-Purple font-bold">
+                        {Number(getTotalBidCount?.toLocaleString())}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white">Total Players: </p>
+                      <p className="text-Purple font-bold">
+                        {totalPlayersCount}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* LeaderBoard */}
+                  <div className="border border-HowTo-Cards-border rounded-md p-4">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                          <th className="p-2 md:p-3">Rankss</th>
+                          <th className="p-2 md:p-3">Player</th>
+                          <th className="p-2 md:p-3">Total Bids</th>
+                          <th className="p-2 md:p-3">Total Tokens Bidded</th>
+                          <th className="p-2 md:p-3">Total USD Bidded</th>
+                          <th className="p-2 md:p-3">First Bid</th>
+                          <th className="p-2 md:p-3">Last Bid</th>
+                          <th className="p-2 md:p-3">First Bid Amount</th>
+                          <th className="p-2 md:p-3">Last Bid Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leaderboard.map((entry, index) => {
+                          const formattedEntry = formatLeaderboardEntry(entry);
+                          return (
+                            <motion.tr
+                              key={entry.player}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="text-white border-b border-HowTo-Cards-border last-of-type:border-none text-left text-[14px] md:text-[16px]"
+                            >
+                              <td className="p-2 md:p-3">{index + 1}</td>
+                              <td className="p-2 md:p-3 text-Purple">
+                                {formattedEntry.player}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalBids}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalTokensBidded} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                ${formattedEntry.totalUSDBidded}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidAmount} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidAmount} {symbol}
+                              </td>
+                            </motion.tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            ) : pureLeaderboard && pureLeaderboard.length > 0 ? (
+              <>
+                {/* Pure Overall Totals Section */}
+                <div className="mt-6 border border-HowTo-Cards-border rounded-md p-4 lg:max-w-[40rem] mx-auto">
+                  <h4 className="text-white font-bold text-xl lg:text-3xl border-b border-HowTo-Cards-border text-center">
+                    Overall Totals
+                  </h4>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white mt-2">Total Tokens Bidded: </p>
+                    <p className="text-Purple font-bold">
+                      {pureOverallTokensBidded.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      {pureSymbol}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white">Total USD Bidded: </p>
+                    <p className="text-Purple font-bold">
+                      $
+                      {pureOverallUSDBidded.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white mt-2">Total Tokens Burnt: </p>
+                    <p className="text-Purple font-bold">
+                      {pureBurntTokens.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      {pureSymbol}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white">Total USD Burnt: </p>
+                    <p className="text-Purple font-bold">
+                      $
+                      {pureBurntTokensUSDValue.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white mt-2">Total Bids: </p>
+                    <p className="text-Purple font-bold">
+                      {Number(pureTotalBidCount?.toLocaleString())}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white">Total Players: </p>
+                    <p className="text-Purple font-bold">{totalPlayersCount}</p>
+                  </div>
+                </div>
+
+                {/* Pure LeaderBoard */}
+                <div className="max-w-[1300px] mx-auto border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar mt-20">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                        <th className="p-2 md:p-3">Rank</th>
+                        <th className="p-2 md:p-3">Player</th>
+                        <th className="p-2 md:p-3">Total Bids</th>
+                        <th className="p-2 md:p-3">Total Tokens Bidded</th>
+                        <th className="p-2 md:p-3">Total USD Bidded</th>
+                        <th className="p-2 md:p-3">First Bid</th>
+                        <th className="p-2 md:p-3">Last Bid</th>
+                        <th className="p-2 md:p-3">First Bid Amount</th>
+                        <th className="p-2 md:p-3">Last Bid Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/*  */}
+                      {pureLeaderboard.map((entry, index) => {
+                        const formattedEntry = formatLeaderboardEntry(entry);
+                        return (
+                          <motion.tr
+                            key={entry.player}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="text-white border-b border-HowTo-Cards-border text-left text-[14px] md:text-[16px]"
+                          >
+                            <td className="p-2 md:p-3">{index + 1}</td>
+                            <td className="p-2 md:p-3 text-Purple">
+                              {formattedEntry.player}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.totalBids}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.totalTokensBidded} {symbol}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              ${formattedEntry.totalUSDBidded}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.firstBidTimestamp}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.lastBidTimestamp}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.firstBidAmount} {symbol}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.lastBidAmount} {symbol}
+                            </td>
+                          </motion.tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : (
+              <p className="text-left font-raleway text-2xl text-Light-Gray mb-4 mt-20">
+                No leaderboard entries found.
+              </p>
+            )}
+          </span>
+        </div>
 
         {/* When the game is active, show the ready to play cards */}
         {/* When the game is active, show the ready to play cards */}
@@ -1067,6 +1326,177 @@ function Dapp() {
         {/* Round Data */}
         {/* Round Data */}
         {/* Round Data */}
+
+        <div className="bg-HowTo-Cards-Background border border-Purple rounded-lg p-6 w-full mx-auto">
+          <h3 className="text-2xl font-bold text-Light-Gray text-left mb-4">
+            Round Data
+          </h3>
+
+          {/* <div className="bg-dark-purple text-light-gray p-4 lg:pt-6 lg:px-6 rounded-lg">
+            <div className="">
+              <label
+                htmlFor="roundInput"
+                className="block text-center mx-auto text-lg md:text-xl lg:text-2xl font-semibold text-light-gray-1 mb-2"
+              >
+                Select Round:
+              </label>
+              <input
+                type="number"
+                id="roundInput"
+                value={selectedRound}
+                onChange={(e) => setSelectedRound(Number(e.target.value))}
+                className="w-full mx-auto p-5 placeholder:text-right placeholder:text-white border border-Purple focus:outline-none focus:ring-4 focus:ring-Purple/60 transition-shadow text-left rounded-[40px] appearance-none"
+              />
+            </div>
+
+            <div className="bg-howItWorks-cards-background p-6 rounded-md shadow-md mb-6 flex flex-col items-center">
+              <h4 className="text-xl font-bold text-white mb-4">
+                Round {selectedRound} Winner History
+              </h4>
+              {isLoadingRoundWinner ? (
+                <p className="text-light-gray-1">
+                  Loading round winner history...
+                </p>
+              ) : roundWinner ? (
+                (() => {
+                  const formattedWinner =
+                    roundWinner && Number(roundWinner[0]) > 0
+                      ? formatRoundWinner(roundWinner)
+                      : null;
+                  if (!formattedWinner) {
+                    return (
+                      <p className="text-light-gray-1">
+                        No winner history found for round {selectedRound}.
+                      </p>
+                    );
+                  }
+                  return (
+                    <div className="winner-details space-y-4">
+                      <div className="bg-color-cta-Background p-5 rounded-lg shadow">
+                        <h5 className="text-lg font-semibold text-purple mb-3">
+                          Last Bid Winner
+                        </h5>
+                        <table className="w-full border border-howTo-cards-border rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="bg-purple text-white">
+                              <th className="px-4 py-2 text-left">Address</th>
+                              <th className="px-4 py-2 text-left">
+                                Prize Tokens
+                              </th>
+                              <th className="px-4 py-2 text-left">Prize USD</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-t border-howTo-cards-border">
+                              <td className="px-4 py-3">{roundWinner?.[1]}</td>
+                              <td className="px-4 py-3">
+                                {(
+                                  Number(roundWinner?.[2]) / 1e18
+                                ).toLocaleString()}{" "}
+                                {symbol}
+                              </td>
+                              <td className="px-4 py-3">
+                                ${Number(roundWinner?.[3]) / 1e18}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <p className="text-light-gray-1">
+                  No winner history found for round {selectedRound}.
+                </p>
+              )}
+            </div>
+          </div> */}
+
+          {/* Bid History Table */}
+          {/* <div className="mt-6">
+            <h4 className="text-lg font-semibold">
+              Bid History for Round {selectedRound}
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search by Address"
+                  value={searchAddress}
+                  onChange={(e) => setSearchAddress(e.target.value)}
+                  className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
+                />
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-Purple">
+                  <img
+                    src={search}
+                    alt="search"
+                    className="size-[16px] md:size-[20px]"
+                  />
+                </span>
+              </div>
+              <input
+                type="datetime-local"
+                value={startDateTime}
+                onChange={(e) => setStartDateTime(e.target.value)}
+                className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
+              />
+              <input
+                type="datetime-local"
+                value={endDateTime}
+                onChange={(e) => setEndDateTime(e.target.value)}
+                className="py-3 pl-12 pr-4 rounded-full border border-Purple text-Light-Gray placeholder-Light-Gray-1 focus:ring-2 focus:ring-Purple focus:outline-none w-full shadow-sm transition-all duration-300 hover:shadow-md"
+                placeholder="Select date & time"
+              />
+            </div>
+
+            {isLoadingBidHistoryByRound ? (
+              <p className="text-gray-500 mt-4">
+                Loading bid history for this round...
+              </p>
+            ) : filteredBids && filteredBids.length > 0 ? (
+              <table className="w-full mt-4 border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-3 py-2">Player</th>
+                    <th className="border border-gray-300 px-3 py-2">
+                      Timestamp
+                    </th>
+                    <th className="border border-gray-300 px-3 py-2">
+                      Tokens Bidded
+                    </th>
+                    <th className="border border-gray-300 px-3 py-2">
+                      USD Value
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBids.map((bid, index) => (
+                    <tr key={index} className="text-center">
+                      <td className="border border-gray-300 px-3 py-2">
+                        {bid.bidder}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        {new Date(
+                          Number(bid.timestamp) * 1000
+                        ).toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-gray-500 mt-4">No bid history found.</p>
+            )}
+          </div> */}
+        </div>
       </div>
 
       {/* Experimental tabs */}
@@ -1627,7 +2057,7 @@ function Dapp() {
       {/* Theo's web3 code */}
       {/* Theo's web3 code */}
       {/* Theo's web3 code */}
-      <div className="mt-40">
+      <div>
         <p>
           Latest ETH Price:${" "}
           {isLoadingGetLatestETHPrice

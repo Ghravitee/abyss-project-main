@@ -3,10 +3,16 @@ import { motion } from "framer-motion";
 type StatsCardProps = {
   cardImage: string;
   title: string;
-  description: string | number | bigint | undefined ;
+  description: string | number | bigint | undefined;
+  loading?: boolean;
 };
 
-const StatsCard = ({ cardImage, title, description }: StatsCardProps) => {
+const StatsCard = ({
+  cardImage,
+  title,
+  description,
+  loading,
+}: StatsCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -20,7 +26,11 @@ const StatsCard = ({ cardImage, title, description }: StatsCardProps) => {
         {title}
       </h3>
       <p className="text-Purple text-center font-bold text-[48px] font-raleway">
-        {description}
+        {loading ? (
+          <span className="h-5 w-20 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+        ) : (
+          description
+        )}
       </p>
     </motion.div>
   );
