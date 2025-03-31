@@ -339,7 +339,7 @@ function Dapp() {
         divideFunct(
           95,
           Number(entry.totalTokensBidded) /
-            Math.pow(10, decimals ? Number(decimals) : 18)
+          Math.pow(10, decimals ? Number(decimals) : 18)
         )
       );
     }, 0);
@@ -351,7 +351,7 @@ function Dapp() {
       return (
         total +
         Number(entry.totalUSDBidded) /
-          Math.pow(10, decimals ? Number(decimals) : 18)
+        Math.pow(10, decimals ? Number(decimals) : 18)
       );
     }, 0);
   }, [leaderboard, decimals]);
@@ -925,11 +925,10 @@ function Dapp() {
                     }
                     onClick={handleBidProcess}
                     className={`cursor-pointer px-10 py-3 rounded-full font-bold text-[18px] transition-all duration-300 ease-in-out
-        ${
-          isGameExpired
-            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-            : "bg-Purple hover:bg-opacity-80 text-white"
-        }
+        ${isGameExpired
+                        ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                        : "bg-Purple hover:bg-opacity-80 text-white"
+                      }
       `}
                   >
                     {isGameExpired ? (
@@ -966,8 +965,8 @@ function Dapp() {
                     {lastTxnType === "approval"
                       ? "Approval confirmed!"
                       : lastTxnType === "bid"
-                      ? "Bid confirmed!"
-                      : ""}
+                        ? "Bid confirmed!"
+                        : ""}
                   </p>
                   <p className="text-sm text-gray-300">Transaction: {txHash}</p>
                 </motion.div>
@@ -1026,11 +1025,10 @@ function Dapp() {
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
               className={`px-6 py-3 rounded-xl font-bold text-[18px] transition-all duration-300 ease-in-out mb-4
-        ${
-          isGameExpired
-            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-            : "bg-Purple hover:bg-opacity-80 text-white"
-        }
+        ${isGameExpired
+                  ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                  : "bg-Purple hover:bg-opacity-80 text-white"
+                }
       `}
             >
               {isGameExpired ? (
@@ -1080,8 +1078,8 @@ function Dapp() {
               {lastTxnType === "approval"
                 ? "Approval confirmed!"
                 : lastTxnType === "bid"
-                ? "Bid confirmed!"
-                : ""}
+                  ? "Bid confirmed!"
+                  : ""}
             </p>
             <p className="text-sm text-gray-300">Transaction: {txHash}</p>
           </motion.div>
@@ -1127,18 +1125,17 @@ function Dapp() {
           {["tab1", "tab2", "tab3"].map((tab) => (
             <button
               key={tab}
-              className={`px-4 py-2 rounded-full font-medium transition-all ${
-                activeTab === tab
-                  ? "bg-white text-black"
-                  : "bg-HowTo-Cards-Background border border-HowTo-Cards-border text-Light-Gray hover:bg-HowTo-Cards-border"
-              }`}
+              className={`px-4 py-2 rounded-full font-medium transition-all ${activeTab === tab
+                ? "bg-white text-black"
+                : "bg-HowTo-Cards-Background border border-HowTo-Cards-border text-Light-Gray hover:bg-HowTo-Cards-border"
+                }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab === "tab1"
                 ? "Bid History"
                 : tab === "tab2"
-                ? "Leaderboard"
-                : "All Winners"}
+                  ? "Leaderboard"
+                  : "All Winners"}
             </button>
           ))}
         </div>
@@ -1303,10 +1300,10 @@ function Dapp() {
                               {isLoadingTokenBurnt
                                 ? "fetching..."
                                 : isConnected &&
-                                  burntTokens.toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  })}{" "}
+                                burntTokens.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}{" "}
                               {symbol}
                             </p>
                           </div>
@@ -1602,6 +1599,7 @@ function Dapp() {
               </span>
             </div>
           )}
+
           {activeTab === "tab3" && (
             <div className="bg-howItWorks-cards-background p-6 rounded-md shadow-md mb-6 flex flex-col items-center">
               <h4 className="text-xl font-bold text-white mb-4">
@@ -1665,371 +1663,7 @@ function Dapp() {
                 </p>
               )}
             </div>
-          </div>
-
-          {/* Bid History Table */}
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold">
-              Bid History for Round {selectedRound}
-            </h4>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search by Address"
-                  value={searchAddress}
-                  onChange={(e) => setSearchAddress(e.target.value)}
-                  className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
-                />
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-Purple">
-                  <img
-                    src={search}
-                    alt="search"
-                    className="size-[16px] md:size-[20px]"
-                  />
-                </span>
-              </div>
-              <input
-                type="datetime-local"
-                value={startDateTime}
-                onChange={(e) => setStartDateTime(e.target.value)}
-                className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
-              />
-              <input
-                type="datetime-local"
-                value={endDateTime}
-                onChange={(e) => setEndDateTime(e.target.value)}
-                className="py-3 pl-12 pr-4 rounded-full border border-Purple text-Light-Gray placeholder-Light-Gray-1 focus:ring-2 focus:ring-Purple focus:outline-none w-full shadow-sm transition-all duration-300 hover:shadow-md"
-                placeholder="Select date & time"
-              />
-            </div>
-
-            {isLoadingBidHistoryByRound ? (
-              <p className="text-gray-500 mt-4">
-                Loading bid history for this round...
-              </p>
-            ) : filteredBids && filteredBids.length > 0 ? (
-              <table className="w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-3 py-2">Player</th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Timestamp
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Tokens Bidded
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      USD Value
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredBids.map((bid, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="border border-gray-300 px-3 py-2">
-                        {bid.bidder}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {new Date(
-                          Number(bid.timestamp) * 1000
-                        ).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-gray-500 mt-4">No bid history found.</p>
-            )}
-          </div>
-        </div>
-      </div >
-
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      <div>
-        <p>
-          Latest ETH Price:${" "}
-          {isLoadingGetLatestETHPrice
-            ? "Loading..."
-            : (isConnected &&
-              (Number(getLatestETHPrice) / 10 ** 8).toFixed(2)) ||
-            pureLatestETHPrice_s}
-        </p>
-        <p>
-          Abyss USD Price:${" "}
-          {isLoadingGetAbyssUSDPrice
-            ? "Loading..."
-            : (isConnected &&
-              (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)) ||
-            pureAbyssUSDPrice_s}
-        </p>
-
-        {/* round data */}
-        <div className="round-data">
-          <h3>Round Data</h3>
-          <div>
-            <label htmlFor="roundInput">Select Round: </label>
-            <input
-              type="number"
-              id="roundInput"
-              value={selectedRound}
-              onChange={(e) => setSelectedRound(Number(e.target.value))}
-            />
-          </div>
-          <div className="round-winner-history">
-            <h4>Round {selectedRound} Winner History</h4>
-            {isLoadingRoundWinner ? (
-              <p>Loading round winner history...</p>
-            ) : roundWinner ? (
-              (() => {
-                const formattedWinner =
-                  roundWinner && Number(roundWinner[0]) > 0
-                    ? formatRoundWinner(roundWinner)
-                    : null;
-                if (!formattedWinner) {
-                  return (
-                    <p>No winner history found for round {selectedRound}.</p>
-                  );
-                }
-                return (
-                  <div className="winner-details">
-                    <div className="last-bidder-section">
-                      <h5>Last Bid Winner</h5>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Address</th>
-                            <th>Prize Tokens</th>
-                            <th>Prize USD</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td> {roundWinner?.[1]}</td>
-                            <td>
-                              {roundWinner &&
-                                (
-                                  Number(roundWinner[4]) / 1e18
-                                ).toLocaleString()}{" "}
-                              {symbol}
-                            </td>
-                            <td>
-                              $
-                              {roundWinner &&
-                                (Number(roundWinner[5]) / 1e18).toFixed(2)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : pureRandomWinnersByRound &&
-                  pureRandomWinnersByRound.length > 0 ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Winner Address</th>
-                        <th>Prize Tokens (Each)</th>
-                        <th>Prize USD (Each)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pureRandomWinnersByRound.map((winner: any, index: number) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{winner}</td>
-                          <td>
-                            {pureRoundWinner &&
-                              (
-                                Number(pureRoundWinner[4]) / 1e18
-                              ).toLocaleString()}{" "}
-                            {pureSymbol}
-                          </td>
-                          <td>
-                            $
-                            {pureRoundWinner &&
-                              (Number(pureRoundWinner[5]) / 1e18).toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p></p>
-                )}
-              </div>
-              <div className="round-date">
-                {isLoadingRoundWinner ? (' ') : isConnected && roundWinner ? (
-                  (() => {
-                    const formattedWinner =
-                      roundWinner && Number(roundWinner[0]) > 0
-                        ? formatRoundWinner(roundWinner)
-                        : null;
-                    if (!formattedWinner) {
-                      return ('');
-                    }
-                    return (
-                      <p>Round Ended: {timeAgo(Number(roundWinner?.[6]))}</p>
-                    );
-                  })()
-                ) : pureRoundWinner ? (
-                  (() => {
-                    const formattedWinner =
-                      pureRoundWinner && Number(pureRoundWinner[0]) > 0
-                        ? formatRoundWinner(pureRoundWinner)
-                        : null;
-                    if (!formattedWinner) {
-                      return ('');
-                    }
-                    return (
-                      <p>Round Ended: {timeAgo(Number(pureRoundWinner?.[6]))}</p>
-                    );
-                  })()
-                ) : ('')}
-              </div>
-            </div>
-          </div>
-
-          {/* Bid History Table */}
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold">
-              Bid History for Round {selectedRound}
-            </h4>
-
-            <div>
-              {isLoadingRoundBidCount ? (
-                <p>Loading round bid count...</p>
-              ) : isConnected && getRoundBidCount ? (
-                <p>Bid Counts for round {selectedRound}: {getRoundBidCount?.toString()} BIDS</p>
-              ) : pureRoundBidCount ? (<p>Bid Counts for round {selectedRound}: {pureRoundBidCount?.toString()} BIDS</p>) : (<p></p>)}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search by Address"
-                  value={searchAddress}
-                  onChange={(e) => setSearchAddress(e.target.value)}
-                  className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
-                />
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-Purple">
-                  <img
-                    src={search}
-                    alt="search"
-                    className="size-[16px] md:size-[20px]"
-                  />
-                </span>
-              </div>
-              <input
-                type="datetime-local"
-                value={startDateTime}
-                onChange={(e) => setStartDateTime(e.target.value)}
-                className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
-              />
-              <input
-                type="datetime-local"
-                value={endDateTime}
-                onChange={(e) => setEndDateTime(e.target.value)}
-                className="py-3 pl-12 pr-4 rounded-full border border-Purple text-Light-Gray placeholder-Light-Gray-1 focus:ring-2 focus:ring-Purple focus:outline-none w-full shadow-sm transition-all duration-300 hover:shadow-md"
-                placeholder="Select date & time"
-              />
-            </div>
-
-            {isLoadingBidHistoryByRound ? (
-              <p className="text-gray-500 mt-4">
-                Loading bid history for this round...
-              </p>
-            ) : isConnected && filteredBids && filteredBids.length > 0 ? (
-              <table className="w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-3 py-2">Player</th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Timestamp
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Tokens Bidded
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      USD Value
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredBids.map((bid, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="border border-gray-300 px-3 py-2">
-                        {bid.bidder}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {new Date(
-                          Number(bid.timestamp) * 1000
-                        ).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : filteredPureBids && filteredPureBids.length > 0 ? (
-              <table className="w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-3 py-2">Player</th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Timestamp
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Tokens Bidded
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      USD Value
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPureBids.map((bid, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="border border-gray-300 px-3 py-2">
-                        {bid.bidder}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {new Date(
-                          Number(bid.timestamp) * 1000
-                        ).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-gray-500 mt-4">No bid history found.</p>
-            )}
-          </div>
+          )}
         </div>
       </div >
 
@@ -2076,7 +1710,7 @@ function Dapp() {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
