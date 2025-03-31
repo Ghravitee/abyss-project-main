@@ -48,10 +48,6 @@ import {
   totalPlayersCount,
   pureTotalBidCount,
   pureSymbol,
-  fetchPureBidHistoryByRound,
-  fetchPureRoundBidCount,
-  fetchPureRoundWinner,
-  fetchPureRandomWinnersByRound,
 } from "@/web3/readContracts";
 
 function Dapp() {
@@ -71,12 +67,7 @@ function Dapp() {
   const [searchAddress, setSearchAddress] = useState("");
   const [startDateTime, setStartDateTime] = useState("");
   const [endDateTime, setEndDateTime] = useState("");
-  const [activeTab, setActiveTab] = useState("tab2");
-  const [pureBidHistoryByRound, setPureBidHistoryByRound] = useState<any>(null);
-  const [pureRoundBidCount, setPureRoundBidCount] = useState<any>(null);
-  const [pureRoundWinner, setPureRoundWinner] = useState<any>(null);
-  const [pureRandomWinnersByRound, setPureRandomWinnersByRound] = useState<any>(null);
-
+  const [activeTab, setActiveTab] = useState("tab1");
 
   // const chainId = useChainId();
   // const isSepoliaTestnet = chainId === testChainID;
@@ -377,27 +368,6 @@ function Dapp() {
       .sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
   }, [getBidHistoryByRound, searchAddress, startDateTime, endDateTime]);
 
-  // Filter the bids using both address and datetime criteria.
-  const filteredPureBids = useMemo(() => {
-    if (!pureBidHistoryByRound) return [];
-    return [...pureBidHistoryByRound]
-      .filter((bid) => {
-        const bidDate = new Date(Number(bid.timestamp) * 1000);
-        // Filter by address if provided (case insensitive)
-        const addressMatch = searchAddress
-          ? bid.bidder.toLowerCase().includes(searchAddress.toLowerCase())
-          : true;
-        // Filter by start datetime if provided
-        const startMatch = startDateTime
-          ? bidDate >= new Date(startDateTime)
-          : true;
-        // Filter by end datetime if provided
-        const endMatch = endDateTime ? bidDate <= new Date(endDateTime) : true;
-        return addressMatch && startMatch && endMatch;
-      })
-      .sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
-  }, [pureBidHistoryByRound, searchAddress, startDateTime, endDateTime]);
-
   // Check if approval is needed whenever allowance or bidAmount changes.
   useEffect(() => {
     if (
@@ -588,22 +558,6 @@ function Dapp() {
       setIsProcessingTxn(false);
     }
   }, [txHash]);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const bidHistory = await fetchPureBidHistoryByRound(selectedRound);
-      const roundBidCount = await fetchPureRoundBidCount(selectedRound);
-      const roundWinnerData = await fetchPureRoundWinner(selectedRound);
-      const randomWinners = await fetchPureRandomWinnersByRound(selectedRound);
-
-      setPureBidHistoryByRound(bidHistory);
-      setPureRoundBidCount(roundBidCount);
-      setPureRoundWinner(roundWinnerData);
-      setPureRandomWinnersByRound(randomWinners);
-    };
-    fetchData();
-  }, [selectedRound]);
 
   // Compute the button text.
   // When processing, show "Processing..." (or "Confirming...").
@@ -1001,7 +955,266 @@ function Dapp() {
 
         <div className="bg-Purple my-[50px] w-full h-[1px]" />
 
-        {/*  */}
+        <div className=" p-4 lg:pt-6 rounded-lg">
+          <h3 className="text-2xl lg:text-[32px] font-bold text-Light-Gray text-left mb-4 uppercase">
+            LeaderBoard History
+          </h3>
+
+          <span className="font-medium">
+            {isLoadingLeaderboard ? (
+              <span className="h-5 w-20 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+            ) : isConnected && leaderboard && leaderboard.length > 0 ? (
+              <>
+                <div className=" overflow-x-auto custom-scrollbar ">
+                  {/* Overall Totals Section */}
+                  <div className="max-w-[40rem] mx-auto mt-6 border border-HowTo-Cards-border rounded-md p-4 mb-6">
+                    <h4 className="text-white font-bold text-xl lg:text-3xl border-b border-HowTo-Cards-border text-center">
+                      Overall Totals
+                    </h4>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white mt-2">Total Tokens Bidded: </p>
+                      <p className="text-Purple font-bold">
+                        {overallTokensBidded.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{" "}
+                        {symbol}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white">Total USD Bidded: </p>
+                      <p className="text-Purple font-bold">
+                        $
+                        {overallUSDBidded.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white mt-2">Total Tokens Burnt: </p>
+                      <p className="text-Purple font-bold">
+                        {isLoadingTokenBurnt
+                          ? "fetching..."
+                          : isConnected &&
+                            burntTokens.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}{" "}
+                        {symbol}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white">Total USD Burnt: </p>
+                      <p className="text-Purple font-bold">
+                        $
+                        {isConnected &&
+                          burntTokensUSDValue.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white mt-2">Total Bids: </p>
+                      <p className="text-Purple font-bold">
+                        {Number(getTotalBidCount?.toLocaleString())}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center lg:text-xl text-lg">
+                      <p className="text-white">Total Players: </p>
+                      <p className="text-Purple font-bold">
+                        {totalPlayersCount}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* LeaderBoard */}
+                  <div className="border border-HowTo-Cards-border rounded-md p-4">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                          <th className="p-2 md:p-3">Rankss</th>
+                          <th className="p-2 md:p-3">Player</th>
+                          <th className="p-2 md:p-3">Total Bids</th>
+                          <th className="p-2 md:p-3">Total Tokens Bidded</th>
+                          <th className="p-2 md:p-3">Total USD Bidded</th>
+                          <th className="p-2 md:p-3">First Bid</th>
+                          <th className="p-2 md:p-3">Last Bid</th>
+                          <th className="p-2 md:p-3">First Bid Amount</th>
+                          <th className="p-2 md:p-3">Last Bid Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leaderboard.map((entry, index) => {
+                          const formattedEntry = formatLeaderboardEntry(entry);
+                          return (
+                            <motion.tr
+                              key={entry.player}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="text-white border-b border-HowTo-Cards-border last-of-type:border-none text-left text-[14px] md:text-[16px]"
+                            >
+                              <td className="p-2 md:p-3">{index + 1}</td>
+                              <td className="p-2 md:p-3 text-Purple">
+                                {formattedEntry.player}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalBids}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.totalTokensBidded} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                ${formattedEntry.totalUSDBidded}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidTimestamp}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.firstBidAmount} {symbol}
+                              </td>
+                              <td className="p-2 md:p-3">
+                                {formattedEntry.lastBidAmount} {symbol}
+                              </td>
+                            </motion.tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            ) : pureLeaderboard && pureLeaderboard.length > 0 ? (
+              <>
+                {/* Pure Overall Totals Section */}
+                <div className="mt-6 border border-HowTo-Cards-border rounded-md p-4 lg:max-w-[40rem] mx-auto">
+                  <h4 className="text-white font-bold text-xl lg:text-3xl border-b border-HowTo-Cards-border text-center">
+                    Overall Totals
+                  </h4>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white mt-2">Total Tokens Bidded: </p>
+                    <p className="text-Purple font-bold">
+                      {pureOverallTokensBidded.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      {pureSymbol}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white">Total USD Bidded: </p>
+                    <p className="text-Purple font-bold">
+                      $
+                      {pureOverallUSDBidded.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white mt-2">Total Tokens Burnt: </p>
+                    <p className="text-Purple font-bold">
+                      {pureBurntTokens.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      {pureSymbol}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white">Total USD Burnt: </p>
+                    <p className="text-Purple font-bold">
+                      $
+                      {pureBurntTokensUSDValue.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white mt-2">Total Bids: </p>
+                    <p className="text-Purple font-bold">
+                      {Number(pureTotalBidCount?.toLocaleString())}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center lg:text-xl text-lg">
+                    <p className="text-white">Total Players: </p>
+                    <p className="text-Purple font-bold">{totalPlayersCount}</p>
+                  </div>
+                </div>
+
+                {/* Pure LeaderBoard */}
+                <div className="max-w-[1300px] mx-auto border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar mt-20">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                        <th className="p-2 md:p-3">Rank</th>
+                        <th className="p-2 md:p-3">Player</th>
+                        <th className="p-2 md:p-3">Total Bids</th>
+                        <th className="p-2 md:p-3">Total Tokens Bidded</th>
+                        <th className="p-2 md:p-3">Total USD Bidded</th>
+                        <th className="p-2 md:p-3">First Bid</th>
+                        <th className="p-2 md:p-3">Last Bid</th>
+                        <th className="p-2 md:p-3">First Bid Amount</th>
+                        <th className="p-2 md:p-3">Last Bid Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/*  */}
+                      {pureLeaderboard.map((entry, index) => {
+                        const formattedEntry = formatLeaderboardEntry(entry);
+                        return (
+                          <motion.tr
+                            key={entry.player}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="text-white border-b border-HowTo-Cards-border text-left text-[14px] md:text-[16px]"
+                          >
+                            <td className="p-2 md:p-3">{index + 1}</td>
+                            <td className="p-2 md:p-3 text-Purple">
+                              {formattedEntry.player}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.totalBids}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.totalTokensBidded} {symbol}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              ${formattedEntry.totalUSDBidded}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.firstBidTimestamp}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.lastBidTimestamp}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.firstBidAmount} {symbol}
+                            </td>
+                            <td className="p-2 md:p-3">
+                              {formattedEntry.lastBidAmount} {symbol}
+                            </td>
+                          </motion.tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : (
+              <p className="text-left font-raleway text-2xl text-Light-Gray mb-4 mt-20">
+                No leaderboard entries found.
+              </p>
+            )}
+          </span>
+        </div>
 
         {/* When the game is active, show the ready to play cards */}
         {/* When the game is active, show the ready to play cards */}
@@ -1113,6 +1326,177 @@ function Dapp() {
         {/* Round Data */}
         {/* Round Data */}
         {/* Round Data */}
+
+        <div className="bg-HowTo-Cards-Background border border-Purple rounded-lg p-6 w-full mx-auto">
+          <h3 className="text-2xl font-bold text-Light-Gray text-left mb-4">
+            Round Data
+          </h3>
+
+          {/* <div className="bg-dark-purple text-light-gray p-4 lg:pt-6 lg:px-6 rounded-lg">
+            <div className="">
+              <label
+                htmlFor="roundInput"
+                className="block text-center mx-auto text-lg md:text-xl lg:text-2xl font-semibold text-light-gray-1 mb-2"
+              >
+                Select Round:
+              </label>
+              <input
+                type="number"
+                id="roundInput"
+                value={selectedRound}
+                onChange={(e) => setSelectedRound(Number(e.target.value))}
+                className="w-full mx-auto p-5 placeholder:text-right placeholder:text-white border border-Purple focus:outline-none focus:ring-4 focus:ring-Purple/60 transition-shadow text-left rounded-[40px] appearance-none"
+              />
+            </div>
+
+            <div className="bg-howItWorks-cards-background p-6 rounded-md shadow-md mb-6 flex flex-col items-center">
+              <h4 className="text-xl font-bold text-white mb-4">
+                Round {selectedRound} Winner History
+              </h4>
+              {isLoadingRoundWinner ? (
+                <p className="text-light-gray-1">
+                  Loading round winner history...
+                </p>
+              ) : roundWinner ? (
+                (() => {
+                  const formattedWinner =
+                    roundWinner && Number(roundWinner[0]) > 0
+                      ? formatRoundWinner(roundWinner)
+                      : null;
+                  if (!formattedWinner) {
+                    return (
+                      <p className="text-light-gray-1">
+                        No winner history found for round {selectedRound}.
+                      </p>
+                    );
+                  }
+                  return (
+                    <div className="winner-details space-y-4">
+                      <div className="bg-color-cta-Background p-5 rounded-lg shadow">
+                        <h5 className="text-lg font-semibold text-purple mb-3">
+                          Last Bid Winner
+                        </h5>
+                        <table className="w-full border border-howTo-cards-border rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="bg-purple text-white">
+                              <th className="px-4 py-2 text-left">Address</th>
+                              <th className="px-4 py-2 text-left">
+                                Prize Tokens
+                              </th>
+                              <th className="px-4 py-2 text-left">Prize USD</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-t border-howTo-cards-border">
+                              <td className="px-4 py-3">{roundWinner?.[1]}</td>
+                              <td className="px-4 py-3">
+                                {(
+                                  Number(roundWinner?.[2]) / 1e18
+                                ).toLocaleString()}{" "}
+                                {symbol}
+                              </td>
+                              <td className="px-4 py-3">
+                                ${Number(roundWinner?.[3]) / 1e18}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <p className="text-light-gray-1">
+                  No winner history found for round {selectedRound}.
+                </p>
+              )}
+            </div>
+          </div> */}
+
+          {/* Bid History Table */}
+          {/* <div className="mt-6">
+            <h4 className="text-lg font-semibold">
+              Bid History for Round {selectedRound}
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search by Address"
+                  value={searchAddress}
+                  onChange={(e) => setSearchAddress(e.target.value)}
+                  className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
+                />
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-Purple">
+                  <img
+                    src={search}
+                    alt="search"
+                    className="size-[16px] md:size-[20px]"
+                  />
+                </span>
+              </div>
+              <input
+                type="datetime-local"
+                value={startDateTime}
+                onChange={(e) => setStartDateTime(e.target.value)}
+                className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
+              />
+              <input
+                type="datetime-local"
+                value={endDateTime}
+                onChange={(e) => setEndDateTime(e.target.value)}
+                className="py-3 pl-12 pr-4 rounded-full border border-Purple text-Light-Gray placeholder-Light-Gray-1 focus:ring-2 focus:ring-Purple focus:outline-none w-full shadow-sm transition-all duration-300 hover:shadow-md"
+                placeholder="Select date & time"
+              />
+            </div>
+
+            {isLoadingBidHistoryByRound ? (
+              <p className="text-gray-500 mt-4">
+                Loading bid history for this round...
+              </p>
+            ) : filteredBids && filteredBids.length > 0 ? (
+              <table className="w-full mt-4 border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-3 py-2">Player</th>
+                    <th className="border border-gray-300 px-3 py-2">
+                      Timestamp
+                    </th>
+                    <th className="border border-gray-300 px-3 py-2">
+                      Tokens Bidded
+                    </th>
+                    <th className="border border-gray-300 px-3 py-2">
+                      USD Value
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBids.map((bid, index) => (
+                    <tr key={index} className="text-center">
+                      <td className="border border-gray-300 px-3 py-2">
+                        {bid.bidder}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        {new Date(
+                          Number(bid.timestamp) * 1000
+                        ).toLocaleString()}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-2">
+                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-gray-500 mt-4">No bid history found.</p>
+            )}
+          </div> */}
+        </div>
       </div>
 
       {/* Experimental tabs */}
@@ -1611,7 +1995,7 @@ function Dapp() {
                 <p className="text-light-gray-1">
                   Loading round winner history...
                 </p>
-              ) : isConnected && roundWinner ? (
+              ) : roundWinner ? (
                 (() => {
                   const formattedWinner =
                     roundWinner && Number(roundWinner[0]) > 0
@@ -1665,93 +2049,9 @@ function Dapp() {
                 </p>
               )}
             </div>
-          </div>
-
-          {/* Bid History Table */}
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold">
-              Bid History for Round {selectedRound}
-            </h4>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search by Address"
-                  value={searchAddress}
-                  onChange={(e) => setSearchAddress(e.target.value)}
-                  className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
-                />
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-Purple">
-                  <img
-                    src={search}
-                    alt="search"
-                    className="size-[16px] md:size-[20px]"
-                  />
-                </span>
-              </div>
-              <input
-                type="datetime-local"
-                value={startDateTime}
-                onChange={(e) => setStartDateTime(e.target.value)}
-                className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
-              />
-              <input
-                type="datetime-local"
-                value={endDateTime}
-                onChange={(e) => setEndDateTime(e.target.value)}
-                className="py-3 pl-12 pr-4 rounded-full border border-Purple text-Light-Gray placeholder-Light-Gray-1 focus:ring-2 focus:ring-Purple focus:outline-none w-full shadow-sm transition-all duration-300 hover:shadow-md"
-                placeholder="Select date & time"
-              />
-            </div>
-
-            {isLoadingBidHistoryByRound ? (
-              <p className="text-gray-500 mt-4">
-                Loading bid history for this round...
-              </p>
-            ) : filteredBids && filteredBids.length > 0 ? (
-              <table className="w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-3 py-2">Player</th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Timestamp
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Tokens Bidded
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      USD Value
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredBids.map((bid, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="border border-gray-300 px-3 py-2">
-                        {bid.bidder}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {new Date(
-                          Number(bid.timestamp) * 1000
-                        ).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-gray-500 mt-4">No bid history found.</p>
-            )}
-          </div>
+          )}
         </div>
-      </div >
+      </div>
 
       {/* Theo's web3 code */}
       {/* Theo's web3 code */}
@@ -1763,16 +2063,16 @@ function Dapp() {
           {isLoadingGetLatestETHPrice
             ? "Loading..."
             : (isConnected &&
-              (Number(getLatestETHPrice) / 10 ** 8).toFixed(2)) ||
-            pureLatestETHPrice_s}
+                (Number(getLatestETHPrice) / 10 ** 8).toFixed(2)) ||
+              pureLatestETHPrice_s}
         </p>
         <p>
           Abyss USD Price:${" "}
           {isLoadingGetAbyssUSDPrice
             ? "Loading..."
             : (isConnected &&
-              (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)) ||
-            pureAbyssUSDPrice_s}
+                (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)) ||
+              pureAbyssUSDPrice_s}
         </p>
 
         {/* round data */}
@@ -1818,244 +2118,121 @@ function Dapp() {
                           <tr>
                             <td> {roundWinner?.[1]}</td>
                             <td>
-                              {roundWinner &&
-                                (
-                                  Number(roundWinner[4]) / 1e18
-                                ).toLocaleString()}{" "}
+                              {" "}
+                              {(
+                                Number(roundWinner?.[2]) / 1e18
+                              ).toLocaleString()}{" "}
                               {symbol}
                             </td>
                             <td>
-                              $
-                              {roundWinner &&
-                                (Number(roundWinner[5]) / 1e18).toFixed(2)}
+                              {" "}
+                              ${(Number(roundWinner?.[3]) / 1e18).toFixed(
+                                2
+                              )}{" "}
                             </td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : pureRandomWinnersByRound &&
-                  pureRandomWinnersByRound.length > 0 ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Winner Address</th>
-                        <th>Prize Tokens (Each)</th>
-                        <th>Prize USD (Each)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pureRandomWinnersByRound.map((winner: any, index: number) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{winner}</td>
-                          <td>
-                            {pureRoundWinner &&
-                              (
-                                Number(pureRoundWinner[4]) / 1e18
-                              ).toLocaleString()}{" "}
-                            {pureSymbol}
-                          </td>
-                          <td>
-                            $
-                            {pureRoundWinner &&
-                              (Number(pureRoundWinner[5]) / 1e18).toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p></p>
-                )}
-              </div>
-              <div className="round-date">
-                {isLoadingRoundWinner ? (' ') : isConnected && roundWinner ? (
-                  (() => {
-                    const formattedWinner =
-                      roundWinner && Number(roundWinner[0]) > 0
-                        ? formatRoundWinner(roundWinner)
-                        : null;
-                    if (!formattedWinner) {
-                      return ('');
-                    }
-                    return (
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div className="random-winners-history">
+                      <h4>Random Winners for Round {selectedRound}</h4>
+                      {isLoadingRandomWinnersByRound ? (
+                        " "
+                      ) : getRandomWinnersByRound &&
+                        getRandomWinnersByRound.length > 0 ? (
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Winner Address</th>
+                              <th>Prize Tokens (Each)</th>
+                              <th>Prize USD (Each)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {getRandomWinnersByRound.map((winner, index) => (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{winner}</td>
+                                <td>
+                                  {roundWinner &&
+                                    (
+                                      Number(roundWinner[4]) / 1e18
+                                    ).toLocaleString()}{" "}
+                                  {symbol}
+                                </td>
+                                <td>
+                                  $
+                                  {roundWinner &&
+                                    (Number(roundWinner[5]) / 1e18).toFixed(2)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p>
+                          No random winners found for round {selectedRound}.
+                        </p>
+                      )}
+                    </div>
+                    <div className="round-date">
                       <p>Round Ended: {timeAgo(Number(roundWinner?.[6]))}</p>
-                    );
-                  })()
-                ) : pureRoundWinner ? (
-                  (() => {
-                    const formattedWinner =
-                      pureRoundWinner && Number(pureRoundWinner[0]) > 0
-                        ? formatRoundWinner(pureRoundWinner)
-                        : null;
-                    if (!formattedWinner) {
-                      return ('');
-                    }
-                    return (
-                      <p>Round Ended: {timeAgo(Number(pureRoundWinner?.[6]))}</p>
-                    );
-                  })()
-                ) : ('')}
-              </div>
-            </div>
+                    </div>
+                  </div>
+                );
+              })()
+            ) : (
+              <p>No winner history found for round {selectedRound}.</p>
+            )}
           </div>
-
-          {/* Bid History Table */}
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold">
-              Bid History for Round {selectedRound}
-            </h4>
-
-            <div>
-              {isLoadingRoundBidCount ? (
-                <p>Loading round bid count...</p>
-              ) : isConnected && getRoundBidCount ? (
-                <p>Bid Counts for round {selectedRound}: {getRoundBidCount?.toString()} BIDS</p>
-              ) : pureRoundBidCount ? (<p>Bid Counts for round {selectedRound}: {pureRoundBidCount?.toString()} BIDS</p>) : (<p></p>)}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search by Address"
-                  value={searchAddress}
-                  onChange={(e) => setSearchAddress(e.target.value)}
-                  className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
-                />
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-Purple">
-                  <img
-                    src={search}
-                    alt="search"
-                    className="size-[16px] md:size-[20px]"
-                  />
-                </span>
-              </div>
+          <div>
+            <h4>Round Bid Count</h4>
+            {isLoadingRoundBidCount ? (
+              <p>Loading round bid count...</p>
+            ) : (
+              <p>Bid Count: {getRoundBidCount?.toString()}</p>
+            )}
+          </div>
+          <div>
+            <h4>Bid History for Round {selectedRound}</h4>
+            {/* Filter Controls */}
+            <div className="filter-controls" style={{ marginBottom: "1rem" }}>
+              <input
+                type="text"
+                placeholder="Search by Address"
+                value={searchAddress}
+                onChange={(e) => setSearchAddress(e.target.value)}
+                style={{ marginRight: "1rem" }}
+              />
+              {/* Using datetime-local to capture both date and time */}
               <input
                 type="datetime-local"
                 value={startDateTime}
                 onChange={(e) => setStartDateTime(e.target.value)}
-                className="py-3 pl-10 rounded-full border border-Purple focus:ring-2 focus:ring-Purple focus:outline-none w-full"
+                style={{ marginRight: "1rem" }}
               />
               <input
                 type="datetime-local"
                 value={endDateTime}
                 onChange={(e) => setEndDateTime(e.target.value)}
-                className="py-3 pl-12 pr-4 rounded-full border border-Purple text-Light-Gray placeholder-Light-Gray-1 focus:ring-2 focus:ring-Purple focus:outline-none w-full shadow-sm transition-all duration-300 hover:shadow-md"
-                placeholder="Select date & time"
               />
             </div>
-
             {isLoadingBidHistoryByRound ? (
-              <p className="text-gray-500 mt-4">
-                Loading bid history for this round...
-              </p>
-            ) : isConnected && filteredBids && filteredBids.length > 0 ? (
-              <table className="w-full mt-4 border-collapse border border-gray-300">
+              <p>Loading bid history for this round...</p>
+            ) : filteredBids && filteredBids.length > 0 ? (
+              <table>
                 <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-3 py-2">Player</th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Timestamp
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Tokens Bidded
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      USD Value
-                    </th>
+                  <tr>
+                    <th>Player</th>
+                    <th>Timestamp</th>
+                    <th>Tokens Bidded</th>
+                    <th>USD Value</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredBids.map((bid, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="border border-gray-300 px-3 py-2">
-                        {bid.bidder}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {new Date(
-                          Number(bid.timestamp) * 1000
-                        ).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : filteredPureBids && filteredPureBids.length > 0 ? (
-              <table className="w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-3 py-2">Player</th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Timestamp
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      Tokens Bidded
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2">
-                      USD Value
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPureBids.map((bid, index) => (
-                    <tr key={index} className="text-center">
-                      <td className="border border-gray-300 px-3 py-2">
-                        {bid.bidder}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {new Date(
-                          Number(bid.timestamp) * 1000
-                        ).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-2">
-                        ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-gray-500 mt-4">No bid history found.</p>
-            )}
-          </div>
-        </div>
-      </div >
-
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      <div>
-        <div>
-          <h4>Most Recent Bids</h4>
-          {isLoadingMostRecentBids ? (
-            <p>Loading most recent bids...</p>
-          ) : getMostRecentBids && getMostRecentBids.length > 0 ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>Timestamp</th>
-                  <th>Tokens Bidded</th>
-                  <th>USD Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...getMostRecentBids]
-                  .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
-                  .map((bid, index) => (
                     <tr key={index}>
                       <td>{bid.bidder}</td>
                       <td>
@@ -2069,11 +2246,87 @@ function Dapp() {
                       <td>${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}</td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>No recent bids found.</p>
-          )}
+                </tbody>
+              </table>
+            ) : (
+              <p>No bid history for this round found.</p>
+            )}
+          </div>
+          <div>
+            <h4>Current Round Bid History</h4>
+            {isLoadingCurrentRoundBidHistory ? (
+              <p>Loading current round bid history...</p>
+            ) : getCurrentRoundBidHistory &&
+              getCurrentRoundBidHistory.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Timestamp</th>
+                    <th>Tokens Bidded</th>
+                    <th>USD Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...getCurrentRoundBidHistory]
+                    .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+                    .map((bid, index) => (
+                      <tr key={index}>
+                        <td>{bid.bidder}</td>
+                        <td>
+                          {new Date(
+                            Number(bid.timestamp) * 1000
+                          ).toLocaleString()}
+                        </td>
+                        <td>
+                          {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
+                        </td>
+                        <td>${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No current round bid history found.</p>
+            )}
+          </div>
+          <div>
+            <h4>Most Recent Bids</h4>
+            {isLoadingMostRecentBids ? (
+              <p>Loading most recent bids...</p>
+            ) : getMostRecentBids && getMostRecentBids.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Timestamp</th>
+                    <th>Tokens Bidded</th>
+                    <th>USD Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...getMostRecentBids]
+                    .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+                    .map((bid, index) => (
+                      <tr key={index}>
+                        <td>{bid.bidder}</td>
+                        <td>
+                          {new Date(
+                            Number(bid.timestamp) * 1000
+                          ).toLocaleString()}
+                        </td>
+                        <td>
+                          {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
+                        </td>
+                        <td>${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No recent bids found.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

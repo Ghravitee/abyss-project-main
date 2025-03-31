@@ -37,10 +37,12 @@ const Converter = ({
           $ Abyss
         </label>
         <p className="w-full p-5 pl-6 text-white border border-Purple focus:outline-none focus:ring-4 focus:ring-Purple/60 transition-shadow rounded-[40px] appearance-none bg-transparent">
-          {isLoadingBidAmount
-            ? "Loading..."
-            : (isConnected && formatTokenAmount(bidAmount, decimals)) ||
-              formatTokenAmount(pureBidAmount, pureDecimals)}{" "}
+          {isLoadingBidAmount ? (
+            <span className="h-5 w-20 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+          ) : (
+            (isConnected && formatTokenAmount(bidAmount, decimals)) ||
+            formatTokenAmount(pureBidAmount, pureDecimals)
+          )}{" "}
           {symbol || pureSymbol}
         </p>
       </div>
@@ -60,14 +62,16 @@ const Converter = ({
         </label>
         <p className="w-full p-5 pl-6 text-white border border-Purple focus:outline-none focus:ring-4 focus:ring-Purple/60 transition-shadow rounded-[40px] appearance-none bg-transparent">
           $
-          {isLoadingBidAmount
-            ? "Loading..."
-            : (isConnected &&
-                bidAmountUSDValue.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })) ||
-              pureBidAmountUSDValue}
+          {isLoadingBidAmount ? (
+            <span className="h-5 w-20 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+          ) : (
+            (isConnected &&
+              bidAmountUSDValue.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })) ||
+            pureBidAmountUSDValue
+          )}
         </p>
       </div>
 

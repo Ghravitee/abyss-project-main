@@ -64,7 +64,7 @@ const CountdownTimer = ({
         })}
       />
 
-      <div className="absolute left-0 right-0 top-1/2 flex items-center justify-center text-[44px] text-3xl font-bold">
+      <div className="absolute left-0 right-0 top-1/2 flex items-center justify-center lg:text-[44px] text-2xl font-bold">
         {hours} <span className="text-lg">HH :</span> {minutes}{" "}
         <span className="text-lg">MM :</span> {seconds}{" "}
         <span className="text-lg">SS</span>

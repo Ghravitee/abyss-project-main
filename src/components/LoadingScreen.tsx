@@ -38,7 +38,7 @@ function LoadingScreen({ isLoading }: LoadingScreenProps) {
           color="#a510d6"
           loading={isLoading}
           cssOverride={override}
-          size={150}
+          size={200}
           aria-label="Loading Spinner"
           data-testid="loader"
         />

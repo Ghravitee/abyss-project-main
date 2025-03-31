@@ -67,52 +67,61 @@ const DappStatistics = ({
             cardImage={statsCards[2].cardImage}
             title="Players Count"
             description={
-              isLoadingPlayerCount
-                ? "Loading..."
-                : isConnected
-                ? getPlayerCount
-                : purePlayerCount
+              isLoadingPlayerCount ? (
+                <span className="h-5 w-20 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+              ) : isConnected ? (
+                getPlayerCount
+              ) : (
+                purePlayerCount
+              )
             }
+            loading={isLoadingPlayerCount}
           />
           <StatsCard
             cardImage={statsCards[4].cardImage}
             title="Pot Value (ABYSS)"
             description={
-              isLoadingPotValue
-                ? "Loading..."
-                : isConnected
-                ? (
-                    Number(getPotValue) /
-                    10 ** (decimals ? Number(decimals) : 18)
-                  ).toLocaleString()
-                : (
-                    Number(purePotValue) /
-                    10 ** (decimals ? Number(decimals) : 18)
-                  ).toLocaleString()
+              isLoadingPotValue ? (
+                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+              ) : isConnected ? (
+                (
+                  Number(getPotValue) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()
+              ) : (
+                (
+                  Number(purePotValue) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()
+              )
             }
+            loading={isLoadingPotValue}
           />
           <StatsCard
             cardImage={statsCards[5].cardImage}
             title="Tokens Burnt (ABYSS)"
             description={
-              isLoadingPotValue
-                ? "Loading..."
-                : isConnected
-                ? Math.round(
-                    divideFunct(
-                      5,
-                      Number(getPotValue) /
-                        10 ** (decimals ? Number(decimals) : 18)
-                    )
-                  ).toLocaleString()
-                : Math.round(
-                    divideFunct(
-                      5,
-                      Number(purePotValue) /
-                        10 ** (decimals ? Number(decimals) : 18)
-                    )
-                  ).toLocaleString()
+              isLoadingPotValue ? (
+                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+              ) : isConnected ? (
+                Math.round(
+                  divideFunct(
+                    5,
+                    Number(getPotValue) /
+                      10 ** (decimals ? Number(decimals) : 18)
+                  )
+                ).toLocaleString()
+              ) : (
+                Math.round(
+                  divideFunct(
+                    5,
+                    Number(purePotValue) /
+                      10 ** (decimals ? Number(decimals) : 18)
+                  )
+                ).toLocaleString()
+              )
             }
+            loading={isLoadingPotValue}
           />
         </motion.div>
         {/* Countdown Timer */}
@@ -121,11 +130,13 @@ const DappStatistics = ({
             <div className="flex flex-col justify-center items-center gap-2">
               <img src={chip} className="size-[25px]" />
               <p className="text-[20px] font-bold">
-                {isLoadingGetCurrentRound || isLoadingGameActive
-                  ? "Fetching..."
-                  : gameActive
-                  ? `Round ${getCurrentRound}`
-                  : `Round ${pureCurrentRound}`}
+                {isLoadingGetCurrentRound || isLoadingGameActive ? (
+                  <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+                ) : gameActive ? (
+                  `Round ${getCurrentRound}`
+                ) : (
+                  `Round ${pureCurrentRound}`
+                )}
               </p>
             </div>
           </div>
@@ -155,46 +166,55 @@ const DappStatistics = ({
             cardImage={statsCards[3].cardImage}
             title="Prize Threshold (USD)"
             description={
-              isLoadingPrizeThreshold
-                ? "Loading..."
-                : isConnected
-                ? `$${(
-                    Number(prizeThreshold) /
-                    10 ** (decimals ? Number(decimals) : 18)
-                  ).toLocaleString()}`
-                : `$${(
-                    Number(purePrizeThreshold) /
-                    10 ** (decimals ? Number(decimals) : 18)
-                  ).toLocaleString()}`
+              isLoadingPrizeThreshold ? (
+                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+              ) : isConnected ? (
+                `$${(
+                  Number(prizeThreshold) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()}`
+              ) : (
+                `$${(
+                  Number(purePrizeThreshold) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()}`
+              )
             }
+            loading={isLoadingPrizeThreshold}
           />
           <StatsCard
             cardImage={statsCards[1].cardImage}
             title="Pot Value (USD)"
             description={
-              isLoadingPotValueInUSD
-                ? "Loading..."
-                : isConnected
-                ? `$${(
-                    Number(getPotValueInUSD) /
-                    10 ** (decimals ? Number(decimals) : 18)
-                  ).toLocaleString()}`
-                : `$${(
-                    Number(purePotValueInUSD) /
-                    10 ** (decimals ? Number(decimals) : 18)
-                  ).toLocaleString()}`
+              isLoadingPotValueInUSD ? (
+                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+              ) : isConnected ? (
+                `$${(
+                  Number(getPotValueInUSD) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()}`
+              ) : (
+                `$${(
+                  Number(purePotValueInUSD) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()}`
+              )
             }
+            loading={isLoadingPotValueInUSD}
           />
           <StatsCard
             cardImage={statsCards[0].cardImage}
             title="Bids Count"
             description={
-              isLoadingTotalBidCount
-                ? "Loading..."
-                : isConnected
-                ? Number(getTotalBidCount?.toLocaleString())
-                : Number(pureCurrentRoundBidCount?.toLocaleString())
+              isLoadingTotalBidCount ? (
+                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+              ) : isConnected ? (
+                Number(getTotalBidCount?.toLocaleString())
+              ) : (
+                Number(pureCurrentRoundBidCount?.toLocaleString())
+              )
             }
+            loading={isLoadingTotalBidCount}
           />
         </motion.div>
       </div>

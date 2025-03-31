@@ -14,7 +14,7 @@ const Footer = () => {
       transition={{ duration: 0.8 }}
       className="border-t border-t-HowTo-Cards-border px-[40px] py-[30px] lg:py-[60px]"
     >
-      <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-10">
+      <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-10 max-w-[1300px] mx-auto">
         {/* Left column */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -47,48 +47,14 @@ const Footer = () => {
 
         {/* Right column */}
         <motion.div
-          className="flex flex-col lg:flex-row gap-4 lg:gap-20 xl:gap-[150px] w-full lg:justify-end"
+          className="lg:self-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          {["About Us", "Services", "Learn"].map((section, idx) => (
-            <motion.div key={idx} whileHover={{ scale: 1.05 }}>
-              <h3 className="font-raleway text-Light-Gray font-semibold mb-5 text-center lg:text-left">
-                {section}
-              </h3>
-              <ul className="flex flex-col lg:items-start items-center gap-5 text-Light-Gray-1">
-                {idx === 0 &&
-                  ["About", "Blog", "Legal & Privacy"].map((item, i) => (
-                    <li key={i}>
-                      <a href="#" className="text-Grayish-Violet">
-                        {item}
-                      </a>
-                    </li>
-                  ))}
-                {idx === 1 &&
-                  ["Applications", "Buy Crypto", "Affiliate"].map((item, i) => (
-                    <li key={i}>
-                      <a href="#" className="text-Grayish-Violet">
-                        {item}
-                      </a>
-                    </li>
-                  ))}
-                {idx === 2 &&
-                  [
-                    "What is Cryptocurrency?",
-                    "Tips and Tutorials",
-                    "Market and Updates",
-                  ].map((item, i) => (
-                    <li key={i}>
-                      <a href="#" className="text-Grayish-Violet">
-                        {item}
-                      </a>
-                    </li>
-                  ))}
-              </ul>
-            </motion.div>
-          ))}
+          <p className="text-Light-Gray-1 text-center">
+            AbyssPot - Where Timing is Everything
+          </p>
         </motion.div>
         <p className="text-Light-Gray-1 text-sm block lg:hidden ">
           2025 AbyssPot. All rights reserved
