@@ -107,11 +107,11 @@ export const pureAbyssUSDPrice = await publicClient.readContract({
 
 
 
-export const pureLatestETHPrice_s =  pureLatestETHPrice
+export const pureLatestETHPrice_s = pureLatestETHPrice
     ? (Number(pureLatestETHPrice) / Math.pow(10, Number(8))).toLocaleString()
     : 0;
 
-export const pureAbyssUSDPrice_s =  pureAbyssUSDPrice
+export const pureAbyssUSDPrice_s = pureAbyssUSDPrice
     ? (Number(pureAbyssUSDPrice) / Math.pow(10, Number(pureDecimals || 18))).toLocaleString()
     : 0;
 
@@ -138,12 +138,6 @@ export const pureTotalBidCount = await publicClient.readContract({
     functionName: "getTotalBidCount",
 });
 
-// export const pureBidHistoryByRound = await publicClient.readContract({
-//     ...POT_ABI,
-//     functionName: "getBidHistoryByRound",
-//     args: [selectedRound as unknown as bigint],
-// });
-
 export const pureCurrentRoundBidHistory = await publicClient.readContract({
     ...POT_ABI,
     functionName: "getCurrentRoundBidHistory",
@@ -154,12 +148,6 @@ export const pureMostRecentBids = await publicClient.readContract({
     functionName: "getMostRecentBids",
     args: [3 as unknown as bigint],
 });
-
-// export const pureRoundBidCount = await publicClient.readContract({
-//     ...POT_ABI,
-//     functionName: "getRoundBidCount",
-//     args: [selectedRound as unknown as bigint],
-// });
 
 export const pureCurrentRoundBidCount = await publicClient.readContract({
     ...POT_ABI,
@@ -173,14 +161,51 @@ export const pureTokenBurnt = await publicClient.readContract({
     args: [NULL_ADDR as `0x${string}`],
 });
 
-// export const pureRoundWinner = await publicClient.readContract({
-//     ...POT_ABI,
-//     functionName: "roundWinnersHistory",
-//     args: [selectedRound as unknown as bigint],
-// });
+/**
+ * Fetches the bid history for a given round.
+ */
+export const fetchPureBidHistoryByRound = async (selectedRound: number) => {
+  return await publicClient.readContract({
+    ...POT_ABI,
+    address: ABYSS_POT_CA,
+    functionName: "getBidHistoryByRound",
+    args: [BigInt(selectedRound)],
+  });
+};
 
-// export const pureRandomWinnersByRound = await publicClient.readContract({
-//     ...POT_ABI,
-//     functionName: "getRandomWinnersByRound",
-//     args: [selectedRound as unknown as bigint],
-// });
+/**
+ * Fetches the round bid count.
+ */
+export const fetchPureRoundBidCount = async (selectedRound: number) => {
+  return await publicClient.readContract({
+    ...POT_ABI,
+    address: ABYSS_POT_CA,
+    functionName: "getRoundBidCount",
+    args: [BigInt(selectedRound)],
+  });
+};
+
+/**
+ * Fetches the round winner.
+ */
+export const fetchPureRoundWinner = async (selectedRound: number) => {
+  return await publicClient.readContract({
+    ...POT_ABI,
+    address: ABYSS_POT_CA,
+    functionName: "roundWinnersHistory",
+    args: [BigInt(selectedRound)],
+  });
+};
+
+/**
+ * Fetches the random winners for the round.
+ */
+export const fetchPureRandomWinnersByRound = async (selectedRound: number) => {
+  return await publicClient.readContract({
+    ...POT_ABI,
+    address: ABYSS_POT_CA,
+    functionName: "getRandomWinnersByRound",
+    args: [BigInt(selectedRound)],
+  });
+};
+
