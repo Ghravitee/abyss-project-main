@@ -1,10 +1,7 @@
 import { motion } from "framer-motion";
 import telegram from "../assets/telegram.png";
 import twitter from "../assets/twitter.png";
-import discord from "../assets/discord.png";
-import linkedin from "../assets/linkedin.png";
-import facebook from "../assets/facebook.png";
-import youtube from "../assets/youtube.png";
+import gitbook from "../assets/gitbook.png";
 
 const Footer = () => {
   return (
@@ -27,7 +24,7 @@ const Footer = () => {
           </div>
           {/* Social links */}
           <div className="flex items-center space-x-4 mb-[32px]">
-            {[telegram, discord, twitter, linkedin, facebook, youtube].map(
+            {[telegram, twitter, gitbook].map(
               (icon, index) => (
                 <motion.a
                   key={index}
