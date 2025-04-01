@@ -1037,7 +1037,7 @@ function Dapp() {
       {/* Experimental tabs */}
       {/* Experimental tabs */}
       {/* Experimental tabs */}
-      <div className="max-w-[1300px] mx-auto mt-10 px-4">
+      <div className="max-w-[1300px] mx-auto my-10 px-4">
         <h3 className="text-2xl lg:text-[32px] font-bold text-Light-Gray text-left mb-4 uppercase">
           LeaderBoard History
         </h3>
@@ -1147,7 +1147,7 @@ function Dapp() {
                       <p></p>
                     )}
                   </div>
-                  <table className="border border-HowTo-Cards-border p-4 rounded-lg ">
+                  <table className="border border-HowTo-Cards-border p-4 rounded-full ">
                     <thead>
                       <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px] border-b border-HowTo-Cards-border last-of-type:border-none">
                         <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
@@ -1190,44 +1190,46 @@ function Dapp() {
                   </table>
                 </div>
               ) : filteredPureBids && filteredPureBids.length > 0 ? (
-                <table className="w-full mt-4 border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-200">
-                      <th className="border border-gray-300 px-3 py-2">
-                        Player
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2">
-                        Timestamp
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2">
-                        Tokens Bidded
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2">
-                        USD Value
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredPureBids.map((bid, index) => (
-                      <tr key={index} className="text-center">
-                        <td className="border border-gray-300 px-3 py-2">
-                          {bid.bidder}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2">
-                          {new Date(
-                            Number(bid.timestamp) * 1000
-                          ).toLocaleString()}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2">
-                          {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2">
-                          ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
-                        </td>
+                <div className="overflow-x-auto custom-scrollbar mt-6">
+                  <table className="w-full mt-4 border-collapse border border-HowTo-Cards-border">
+                    <thead>
+                      <tr className="">
+                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                          Player
+                        </th>
+                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                          Timestamp
+                        </th>
+                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                          Tokens Bidded
+                        </th>
+                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                          USD Value
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {filteredPureBids.map((bid, index) => (
+                        <tr key={index} className="text-center">
+                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                            {bid.bidder}
+                          </td>
+                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                            {new Date(
+                              Number(bid.timestamp) * 1000
+                            ).toLocaleString()}
+                          </td>
+                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                            {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
+                          </td>
+                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                            ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
                 <p className="text-gray-500 mt-4">No bid history found.</p>
               )}
@@ -1490,7 +1492,7 @@ function Dapp() {
 
                     {/* Pure LeaderBoard */}
                     <div className="max-w-[1300px] mx-auto border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar mt-20">
-                      <table className="w-full">
+                      <table className="w-full border-collapse">
                         <thead>
                           <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
                             <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
@@ -1579,8 +1581,8 @@ function Dapp() {
           )}
 
           {activeTab === "tab3" && (
-            <div className="overflow-x-auto">
-              <div className="bg-howItWorks-cards-background p-6 rounded-md shadow-md mb-6 flex flex-col items-center">
+            <div className="">
+              <div className="p-6 rounded-md shadow-md mb-6 flex flex-col items-start overflow-x-auto custom-scrollbar mt-6">
                 <h4 className="text-xl font-bold text-white mb-4">
                   Round {selectedRound} Winner History
                 </h4>
@@ -1602,42 +1604,44 @@ function Dapp() {
                       );
                     }
                     return (
-                      <div className="p-5">
-                        <h5 className="text-lg font-semibold text-purple mb-3">
-                          Last Bid Winner
-                        </h5>
-                        <div className="border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar">
-                          <table className="w-full border-collapse">
-                            <thead>
-                              <tr className="text-Light-Gray-1 font-medium text-left text-[12px] md:text-[16px]">
-                                <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  Address
-                                </th>
-                                <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  Prize Tokens
-                                </th>
-                                <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  Prize USD
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr className="border-t border-HowTo-Cards-border">
-                                <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  {roundWinner?.[1]}
-                                </td>
-                                <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  {(
-                                    Number(roundWinner?.[2]) / 1e18
-                                  ).toLocaleString()}{" "}
-                                  {symbol}
-                                </td>
-                                <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  ${Number(roundWinner?.[3]) / 1e18}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                      <div className="overflow-x-auto custom-scrollbar mt-6">
+                        <div className="bg-color-cta-Background p-5 rounded-lg shadow">
+                          <h5 className="text-lg font-semibold text-purple mb-3">
+                            Last Bid Winner
+                          </h5>
+                          <div className=" mt-6 border border-HowTo-Cards-border rounded-lg">
+                            <table className="w-full ">
+                              <thead>
+                                <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                                  <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    Address
+                                  </th>
+                                  <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    Prize Tokens
+                                  </th>
+                                  <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    Prize USD
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-t border-HowTo-Cards-border">
+                                  <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    {roundWinner?.[1]}
+                                  </td>
+                                  <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    {(
+                                      Number(roundWinner?.[2]) / 1e18
+                                    ).toLocaleString()}{" "}
+                                    {symbol}
+                                  </td>
+                                  <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    ${Number(roundWinner?.[3]) / 1e18}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1656,44 +1660,44 @@ function Dapp() {
                       );
                     }
                     return (
-                      <div className="p-5">
-                        <h5 className="text-lg font-semibold text-purple mb-3">
-                          Last Bid Winner
-                        </h5>
-
-                        {/* Scrollable Table Container */}
-                        <div className="border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar w-full">
-                          <table className="w-full min-w-max border-collapse">
-                            <thead>
-                              <tr className="text-Light-Gray-1 font-medium text-left text-[12px] md:text-[16px]">
-                                <th className="p-2 md:p-3 border-r border-HowTo-Cards-border whitespace-nowrap">
-                                  Address
-                                </th>
-                                <th className="p-2 md:p-3 border-r border-HowTo-Cards-border whitespace-nowrap">
-                                  Prize Tokens
-                                </th>
-                                <th className="p-2 md:p-3 border-r border-HowTo-Cards-border whitespace-nowrap">
-                                  Prize USD
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr className="border-t border-HowTo-Cards-border">
-                                <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  {roundWinner?.[1]}
-                                </td>
-                                <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  {(
-                                    Number(roundWinner?.[2]) / 1e18
-                                  ).toLocaleString()}{" "}
-                                  {symbol}
-                                </td>
-                                <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  ${Number(roundWinner?.[3]) / 1e18}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                      <div className="winner-details space-y-4">
+                        <div className="bg-color-cta-Background p-5 rounded-lg shadow">
+                          <h5 className="text-lg font-semibold text-purple mb-3">
+                            Last Bid Winner
+                          </h5>
+                          <div className="overflow-x-auto custom-scrollbar mt-6">
+                            <table className="w-full border border-howTo-cards-border rounded-lg overflow-hidden">
+                              <thead>
+                                <tr className="bg-purple text-white">
+                                  <th className="px-4 py-2 text-left">
+                                    Address
+                                  </th>
+                                  <th className="px-4 py-2 text-left">
+                                    Prize Tokens
+                                  </th>
+                                  <th className="px-4 py-2 text-left">
+                                    Prize USD
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-t border-HowTo-Cards-border">
+                                  <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    {pureRoundWinner?.[1]}
+                                  </td>
+                                  <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    {(
+                                      Number(pureRoundWinner?.[2]) / 1e18
+                                    ).toLocaleString()}{" "}
+                                    {pureSymbol}
+                                  </td>
+                                  <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                    ${Number(pureRoundWinner?.[3]) / 1e18}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
                     );
