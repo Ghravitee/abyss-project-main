@@ -235,27 +235,10 @@ const DappStatistics = ({
               )
             }
             loading={isLoadingPrizeThreshold && isLoadingDecimals}
+            tooltipInfo="This is the minimum prize value, expressed in USD, that must be reached before the 70%/30% split to occure 
+"
           />
-          {/* <StatsCard
-            cardImage={statsCards[1].cardImage}
-            title="Pot Value (USD)"
-            description={
-              isLoadingPotValueInUSD ? (
-                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
-              ) : isConnected ? (
-                `$${(
-                  Number(getPotValueInUSD) /
-                  10 ** (decimals ? Number(decimals) : 18)
-                ).toLocaleString()}`
-              ) : (
-                `$${(
-                  Number(purePotValueInUSD) /
-                  10 ** (decimals ? Number(decimals) : 18)
-                ).toLocaleString()}`
-              )
-            }
-            loading={isLoadingPotValueInUSD}
-          /> */}
+
           <StatsCard
             cardImage={statsCards[0].cardImage}
             title="Bids Count"
@@ -269,6 +252,7 @@ const DappStatistics = ({
               )
             }
             loading={isLoadingCurrentRoundBidCount}
+            tooltipInfo="This indicates the total number of bids that have been placed."
           />
         </motion.div>
       </div>
