@@ -11,7 +11,7 @@ const Tokenomics = () => {
     { name: "Team", percentage: 5, color: "#FFF200" },
   ];
 
-  // Calculate the start and end angles for each segment with gaps
+  // Calculate the start and end angles for each segment with the appropriate gaps
   const calculateCircleSegments = (items: TokenomicsItem[]) => {
     let currentAngle = 0;
     // Gap size in degrees (2-3% of a full circle)
