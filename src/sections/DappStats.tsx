@@ -13,7 +13,8 @@ import {
   pureTimeRemaining,
 } from "@/web3/readContracts";
 import { divideFunct } from "@/web3/formatters";
-import chip from "../assets/chip.png";
+import { HiArrowPathRoundedSquare } from "react-icons/hi2";
+import { useState } from "react";
 
 type DappStatisticsProps = {
   isLoadingCurrentRoundBidCount: boolean;
@@ -37,7 +38,6 @@ type DappStatisticsProps = {
 };
 
 const DappStatistics = ({
-
   isLoadingCurrentRoundBidCount,
   getCurrentRoundBidCount,
   isConnected,
@@ -45,7 +45,7 @@ const DappStatistics = ({
   getPlayerCount,
   isLoadingPotValue,
   getPotValue,
-  isLoadingPotValueInUSD,
+  // isLoadingPotValueInUSD,
   getPotValueInUSD,
   isLoadingPrizeThreshold,
   prizeThreshold,
@@ -57,6 +57,7 @@ const DappStatistics = ({
   isLoadingGameActive,
   gameActive,
 }: DappStatisticsProps) => {
+  const [showTooltip, setShowTooltip] = useState(false);
   return (
     <section id="statistics" className="pt-[88px] lg:pt-[5px]">
       <div className="grid grid-cols-1 lg:grid-cols-[.3fr_.4fr_.3fr] mt-8 gap-5 items-center px-4 h-fit max-w-[1300px] mx-auto">
@@ -80,10 +81,11 @@ const DappStatistics = ({
               )
             }
             loading={isLoadingPlayerCount}
+            tooltipInfo="Total number of players participating in the game."
           />
-          <StatsCard
+          {/* <StatsCard
             cardImage={statsCards[4].cardImage}
-            title="Pot Value (ABYSS | USD)"
+            title="Current Pot Value ($abyss) /(USD)"
             description={
               isLoadingPotValue && isLoadingPotValueInUSD && isLoadingDecimals ? (
                 <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
@@ -105,26 +107,58 @@ const DappStatistics = ({
                 ).toLocaleString()}`
               )
             }
-            loading={isLoadingPotValue && isLoadingDecimals}
+            loading={isLoadingPotValue}
+            tooltipInfo="This represents the monetary value of the pot in U.S. dollars."
+          /> */}
+
+          <StatsCard
+            cardImage={statsCards[4].cardImage}
+            title="Current Pot Value (ABYSS / USD)"
+            description={
+              isLoadingPotValue ? (
+                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+              ) : isConnected ? (
+                `${(
+                  Number(getPotValue) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()} ($${(
+                  Number(getPotValueInUSD) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()})`
+              ) : (
+                `${(
+                  Number(purePotValue) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()} ($${(
+                  Number(purePotValueInUSD) /
+                  10 ** (decimals ? Number(decimals) : 18)
+                ).toLocaleString()})`
+              )
+            }
+            loading={isLoadingPotValue}
+            tooltipInfo="This represents the monetary value of the pot in both ABYSS and U.S. dollars."
           />
+
           <StatsCard
             cardImage={statsCards[5].cardImage}
             title="Tokens Burnt (ABYSS | USD)"
             description={
-              isLoadingPotValue && isLoadingPotValueInUSD && isLoadingDecimals ? (
+              isLoadingPotValue &&
+              isLoadingPotValueInUSD &&
+              isLoadingDecimals ? (
                 <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
               ) : isConnected ? (
                 `${Math.round(
                   divideFunct(
                     5,
                     Number(getPotValue) /
-                    10 ** (decimals ? Number(decimals) : 18)
+                      10 ** (decimals ? Number(decimals) : 18)
                   )
                 ).toLocaleString()} | $${Math.round(
                   divideFunct(
                     5,
                     Number(getPotValueInUSD) /
-                    10 ** (decimals ? Number(decimals) : 18)
+                      10 ** (decimals ? Number(decimals) : 18)
                   )
                 ).toLocaleString()}`
               ) : (
@@ -132,36 +166,23 @@ const DappStatistics = ({
                   divideFunct(
                     5,
                     Number(purePotValue) /
-                    10 ** (pureDecimals ? Number(pureDecimals) : 18)
+                      10 ** (pureDecimals ? Number(pureDecimals) : 18)
                   )
                 ).toLocaleString()} | $${Math.round(
                   divideFunct(
                     5,
                     Number(purePotValueInUSD) /
-                    10 ** (pureDecimals ? Number(pureDecimals) : 18)
+                      10 ** (pureDecimals ? Number(pureDecimals) : 18)
                   )
                 ).toLocaleString()}`
               )
             }
-            loading={isLoadingPotValueInUSD && isLoadingPotValue}
+            loading={isLoadingPotValue}
+            tooltipInfo="This metric shows how many Abyss tokens have been permanently removed from circulation (i.e., “burnt”)."
           />
         </motion.div>
         {/* Countdown Timer */}
         <div className="flex flex-col gap-y-6">
-          <div className="bg-Purple p-[20px] rounded-[18px]">
-            <div className="flex flex-col justify-center items-center gap-2">
-              <img src={chip} className="size-[25px]" />
-              <p className="text-[20px] font-bold">
-                {isLoadingGetCurrentRound || isLoadingGameActive ? (
-                  <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
-                ) : gameActive ? (
-                  `Round ${getCurrentRound}`
-                ) : (
-                  `Round ${pureCurrentRound}`
-                )}
-              </p>
-            </div>
-          </div>
           <motion.div
             className="flex justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -184,6 +205,43 @@ const DappStatistics = ({
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.05 }}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            className="relative bg-HowTo-Cards-Background border border-HowTo-Cards-border rounded-[20px] p-5 flex flex-col items-center w-full max-w-sm mx-auto"
+          >
+            <div className="flex flex-col justify-center items-center gap-2">
+              <HiArrowPathRoundedSquare className="mb-[24px] text-white text-2xl font-bold" />
+              <h3 className="mb-[10px] font-bold text-[20px] text-Light-Gray text-center">
+                Round
+              </h3>
+              <p className="text-Purple text-center font-bold text-[48px] font-raleway">
+                {isLoadingGetCurrentRound || isLoadingGameActive ? (
+                  <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
+                ) : gameActive ? (
+                  `${getCurrentRound}`
+                ) : (
+                  `${pureCurrentRound}`
+                )}
+              </p>
+            </div>
+
+            {showTooltip && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="absolute bottom-full mb-3 px-4 py-2 rounded-lg bg-Dark-Purple text-Light-Gray text-sm w-[250px] text-center shadow-lg border border-HowTo-Cards-border"
+              >
+                This is the current round
+              </motion.div>
+            )}
+          </motion.div>
           <StatsCard
             cardImage={statsCards[3].cardImage}
             title="Prize Threshold (USD)"
@@ -202,28 +260,10 @@ const DappStatistics = ({
                 ).toLocaleString()}`
               )
             }
-            loading={isLoadingPrizeThreshold && isLoadingDecimals}
+            loading={isLoadingPrizeThreshold}
+            tooltipInfo="This is the minimum prize value, expressed in USD, that must be reached before the 70%/30% split to occure"
           />
-          {/* <StatsCard
-            cardImage={statsCards[1].cardImage}
-            title="Pot Value (USD)"
-            description={
-              isLoadingPotValueInUSD ? (
-                <span className="h-5 w-24 bg-gray-600 rounded-md animate-pulse inline-block"></span>
-              ) : isConnected ? (
-                `$${(
-                  Number(getPotValueInUSD) /
-                  10 ** (decimals ? Number(decimals) : 18)
-                ).toLocaleString()}`
-              ) : (
-                `$${(
-                  Number(purePotValueInUSD) /
-                  10 ** (decimals ? Number(decimals) : 18)
-                ).toLocaleString()}`
-              )
-            }
-            loading={isLoadingPotValueInUSD}
-          /> */}
+
           <StatsCard
             cardImage={statsCards[0].cardImage}
             title="Bids Count"
@@ -236,7 +276,8 @@ const DappStatistics = ({
                 Number(pureCurrentRoundBidCount?.toLocaleString())
               )
             }
-            loading={isLoadingCurrentRoundBidCount}
+            loading={isLoadingTotalBidCount}
+            tooltipInfo="This indicates the total number of bids that have been placed."
           />
         </motion.div>
       </div>

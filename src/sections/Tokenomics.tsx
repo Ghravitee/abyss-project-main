@@ -6,9 +6,9 @@ interface TokenomicsItem {
 
 const Tokenomics = () => {
   const tokenDistribution: TokenomicsItem[] = [
-    { name: "Liquidity", percentage: 85, color: "#3DB9DC" },
+    { name: "Liquidity", percentage: 85, color: "#00FF00" },
     { name: "Marketing", percentage: 10, color: "#A510D6" },
-    { name: "Team", percentage: 5, color: "#2B67D6" },
+    { name: "Team", percentage: 5, color: "#FFF200" },
   ];
 
   // Calculate the start and end angles for each segment with gaps
@@ -16,20 +16,20 @@ const Tokenomics = () => {
     let currentAngle = 0;
     // Gap size in degrees (2-3% of a full circle)
     const gapSize = 360 * 0.03;
-    
+
     return items.map((item) => {
       // Add half the gap to the start angle
       const startAngle = currentAngle + gapSize / 2;
-      
+
       // Calculate how much of the circle this item takes up (including the full gap)
       const itemArcSize = (item.percentage / 100) * 360;
-      
+
       // Update the current angle for the next item
       currentAngle += itemArcSize;
-      
+
       // Subtract half the gap from the end angle
       const endAngle = currentAngle - gapSize / 2;
-      
+
       return {
         ...item,
         startAngle,
@@ -41,7 +41,12 @@ const Tokenomics = () => {
   const segments = calculateCircleSegments(tokenDistribution);
 
   // Function to convert angle to coordinates on a circle
-  const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
+  const polarToCartesian = (
+    centerX: number,
+    centerY: number,
+    radius: number,
+    angleInDegrees: number
+  ) => {
     const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
     return {
       x: centerX + radius * Math.cos(angleInRadians),
@@ -50,22 +55,37 @@ const Tokenomics = () => {
   };
 
   // Function to create an SVG arc path
-  const createArcPath = (x: number, y: number, radius: number, startAngle: number, endAngle: number) => {
+  const createArcPath = (
+    x: number,
+    y: number,
+    radius: number,
+    startAngle: number,
+    endAngle: number
+  ) => {
     const start = polarToCartesian(x, y, radius, endAngle);
     const end = polarToCartesian(x, y, radius, startAngle);
     const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
 
     return [
-      "M", start.x, start.y,
-      "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y,
+      "M",
+      start.x,
+      start.y,
+      "A",
+      radius,
+      radius,
+      0,
+      largeArcFlag,
+      0,
+      end.x,
+      end.y,
     ].join(" ");
   };
 
   // Position settings for labels based on segment
   const getLabelPositions = (segment: any) => {
     const { name } = segment;
-    
-    switch(name) {
+
+    switch (name) {
       case "Liquidity":
         return {
           nameRadius: 85,
@@ -73,7 +93,7 @@ const Tokenomics = () => {
           nameDy: -20,
           percentDy: 20,
           dotRadius: 70,
-          dotSize: 4
+          dotSize: 4,
         };
       case "Marketing":
         return {
@@ -82,7 +102,7 @@ const Tokenomics = () => {
           nameDy: -20,
           percentDy: 20,
           dotRadius: 70,
-          dotSize: 4
+          dotSize: 4,
         };
       case "Team":
         return {
@@ -91,7 +111,7 @@ const Tokenomics = () => {
           nameDy: -20,
           percentDy: 20,
           dotRadius: 70,
-          dotSize: 4
+          dotSize: 4,
         };
       default:
         return {
@@ -100,7 +120,7 @@ const Tokenomics = () => {
           nameDy: -20,
           percentDy: 20,
           dotRadius: 70,
-          dotSize: 4
+          dotSize: 4,
         };
     }
   };
@@ -111,7 +131,8 @@ const Tokenomics = () => {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4 text-white">Tokenomics</h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Our token distribution is designed to ensure long-term stability and growth.
+            Our token distribution is designed to ensure long-term stability and
+            growth.
           </p>
         </div>
 
@@ -120,11 +141,24 @@ const Tokenomics = () => {
             {/* SVG Pie Chart */}
             <svg viewBox="0 0 400 400" className="w-full">
               {/* Dark background circle */}
-              <circle cx="200" cy="200" r="150" fill="transparent" stroke="#1D2235" strokeWidth="30" />
-              
+              <circle
+                cx="200"
+                cy="200"
+                r="150"
+                fill="transparent"
+                stroke="#1D2235"
+                strokeWidth="30"
+              />
+
               {/* Segments with gaps */}
               {segments.map((segment, index) => {
-                const arcPath = createArcPath(200, 200, 150, segment.startAngle, segment.endAngle);
+                const arcPath = createArcPath(
+                  200,
+                  200,
+                  150,
+                  segment.startAngle,
+                  segment.endAngle
+                );
                 return (
                   <path
                     key={index}
@@ -144,21 +178,36 @@ const Tokenomics = () => {
               {segments.map((segment, index) => {
                 const midAngle = (segment.startAngle + segment.endAngle) / 2;
                 const positions = getLabelPositions(segment);
-                
+
                 // Calculate positions for name and percentage separately
-                const namePoint = polarToCartesian(200, 200, positions.nameRadius, midAngle);
-                const percentPoint = polarToCartesian(200, 200, positions.percentRadius, midAngle);
-                const dotPosition = polarToCartesian(200, 200, positions.dotRadius, midAngle);
-                
+                const namePoint = polarToCartesian(
+                  200,
+                  200,
+                  positions.nameRadius,
+                  midAngle
+                );
+                const percentPoint = polarToCartesian(
+                  200,
+                  200,
+                  positions.percentRadius,
+                  midAngle
+                );
+                const dotPosition = polarToCartesian(
+                  200,
+                  200,
+                  positions.dotRadius,
+                  midAngle
+                );
+
                 return (
                   <g key={`label-${index}`}>
-                    <circle 
-                      cx={dotPosition.x} 
-                      cy={dotPosition.y} 
-                      r={positions.dotSize} 
-                      fill={segment.color} 
+                    <circle
+                      cx={dotPosition.x}
+                      cy={dotPosition.y}
+                      r={positions.dotSize}
+                      fill={segment.color}
                     />
-                    
+
                     {/* Name label */}
                     <text
                       x={namePoint.x}
@@ -171,7 +220,7 @@ const Tokenomics = () => {
                     >
                       {segment.name}
                     </text>
-                    
+
                     {/* Percentage label */}
                     <text
                       x={percentPoint.x}
@@ -187,13 +236,13 @@ const Tokenomics = () => {
                   </g>
                 );
               })}
-              
+
               {/* Add connecting lines between label and arc for better visibility */}
               {segments.map((segment, index) => {
                 const midAngle = (segment.startAngle + segment.endAngle) / 2;
                 const arcPoint = polarToCartesian(200, 200, 150, midAngle);
                 const dotPosition = polarToCartesian(200, 200, 70, midAngle);
-                
+
                 // Only draw connecting lines for Marketing (since it's the smallest segment)
                 if (segment.name === "Marketing") {
                   return (
@@ -215,17 +264,26 @@ const Tokenomics = () => {
           </div>
 
           <div className="w-full max-w-md">
-            <div className="bg-[#1A1E30] rounded-xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold mb-6 text-white">Token Allocation</h3>
-              
+            <div className="bg-HowItWorks-Cards-Background border border-HowTo-Cards-border rounded-xl p-8 shadow-xl">
+              <h3 className="text-2xl font-bold mb-6 text-white">
+                Token Allocation
+              </h3>
+
               <div className="space-y-6">
                 {tokenDistribution.map((item, index) => (
                   <div key={index} className="flex items-center">
-                    <div className="w-4 h-4 rounded-full mr-4" style={{ backgroundColor: item.color }}></div>
+                    <div
+                      className="w-4 h-4 rounded-full mr-4"
+                      style={{ backgroundColor: item.color }}
+                    ></div>
                     <div className="flex-1">
                       <div className="flex justify-between mb-2">
-                        <span className="text-white font-medium">{item.name}</span>
-                        <span className="text-white font-medium">{item.percentage}%</span>
+                        <span className="text-white font-medium">
+                          {item.name}
+                        </span>
+                        <span className="text-white font-medium">
+                          {item.percentage}%
+                        </span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2">
                         <div
@@ -240,10 +298,12 @@ const Tokenomics = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-8 pt-6 border-t border-gray-700">
                 <p className="text-gray-300">
-                  Our token distribution prioritizes liquidity to ensure market stability, while allocating appropriate percentages for marketing initiatives and team development.
+                  Our token distribution prioritizes liquidity to ensure market
+                  stability, while allocating appropriate percentages for
+                  marketing initiatives and team development.
                 </p>
               </div>
             </div>

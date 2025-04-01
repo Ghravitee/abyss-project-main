@@ -6,7 +6,7 @@ import {
   pureTotalBidCount,
   totalPlayersCount,
   pureOverallTokensBidded,
-  pureOverallUSDBidded,
+  // pureOverallUSDBidded,
   pureBurntTokens,
   purePrizeThreshold,
   pureTimeRemaining,
@@ -14,9 +14,13 @@ import {
   pureBurntTokensUSDValue,
 } from "@/web3/readContracts";
 
+<<<<<<< HEAD
 type StatisticsProps = {};
 
 const Statistics = ({ }: StatisticsProps) => {
+=======
+const Statistics = () => {
+>>>>>>> dan-branch
   if (totalPlayersCount === 0) return null;
   return (
     <section id="statistics" className="pt-[88px]">
@@ -39,8 +43,9 @@ const Statistics = ({ }: StatisticsProps) => {
         >
           <StatsCard
             cardImage={statsCards[2].cardImage}
-            title="Total Players"
+            title="Players Count"
             description={totalPlayersCount}
+            tooltipInfo="This indicates the number of active participants in the Abyss Pot event or game. "
           />
           <StatsCard
             cardImage={statsCards[4].cardImage}
@@ -48,10 +53,15 @@ const Statistics = ({ }: StatisticsProps) => {
             description={`${Math.round(Number(pureOverallTokensBidded.toLocaleString(undefined, {
               minimumFractionDigits: 4,
               maximumFractionDigits: 4,
+<<<<<<< HEAD
             })))} | $${(pureOverallUSDBidded.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }))}`}
+=======
+            })}
+            tooltipInfo="Total amount of ABYSS tokens bid on the pot."
+>>>>>>> dan-branch
           />
           <StatsCard
             cardImage={statsCards[5].cardImage}
@@ -59,10 +69,16 @@ const Statistics = ({ }: StatisticsProps) => {
             description={`${Math.round(Number(pureBurntTokens.toLocaleString(undefined, {
               minimumFractionDigits: 4,
               maximumFractionDigits: 4,
+<<<<<<< HEAD
             })))} | $${(pureBurntTokensUSDValue).toLocaleString(undefined, {
               minimumFractionDigits: 4,
               maximumFractionDigits: 4,
             })}`}
+=======
+            })}
+            tooltipInfo="This metric shows how many Abyss tokens have been permanently removed from circulation (i.e., “burnt”). 
+"
+>>>>>>> dan-branch
           />
         </motion.div>
         {/* Countdown Timer */}
@@ -72,11 +88,6 @@ const Statistics = ({ }: StatisticsProps) => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
         >
-          <StatsCard
-            cardImage={statsCards[0].cardImage}
-            title="Current Round"
-            description={Number(pureCurrentRound?.toLocaleString())}
-          />
           <CountdownTimer
             getTimeRemaining={pureTimeRemaining}
             isLoadingTimeRemaining={false}
@@ -90,12 +101,19 @@ const Statistics = ({ }: StatisticsProps) => {
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <StatsCard
+            cardImage={statsCards[0].cardImage}
+            title="Current Round"
+            description={Number(pureCurrentRound?.toLocaleString())}
+          />
+          <StatsCard
             cardImage={statsCards[3].cardImage}
             title="Prize Threshold (USD)"
             description={`$${(
               Number(purePrizeThreshold) /
               10 ** 18
             ).toLocaleString()}`}
+            tooltipInfo="This is the minimum prize value, expressed in USD, that must be reached before the 70%/30% split to occure 
+"
           />
           {/* <StatsCard
             cardImage={statsCards[1].cardImage}
@@ -107,8 +125,9 @@ const Statistics = ({ }: StatisticsProps) => {
           /> */}
           <StatsCard
             cardImage={statsCards[0].cardImage}
-            title=" Total Bids"
+            title="Bids Count"
             description={Number(pureTotalBidCount?.toLocaleString())}
+            tooltipInfo="Total number of bids made on the pot."
           />
         </motion.div>
       </div>
