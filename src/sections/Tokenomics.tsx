@@ -11,14 +11,24 @@ const Tokenomics = () => {
     { name: "Team", percentage: 5, color: "#2B67D6" },
   ];
 
-  // Calculate the start and end angles for each segment
+  // Calculate the start and end angles for each segment with gaps
   const calculateCircleSegments = (items: TokenomicsItem[]) => {
     let currentAngle = 0;
+    // Gap size in degrees (2-3% of a full circle)
+    const gapSize = 360 * 0.03;
+    
     return items.map((item) => {
-      const startAngle = currentAngle;
-      const angle = (item.percentage / 100) * 360;
-      currentAngle += angle;
-      const endAngle = currentAngle;
+      // Add half the gap to the start angle
+      const startAngle = currentAngle + gapSize / 2;
+      
+      // Calculate how much of the circle this item takes up (including the full gap)
+      const itemArcSize = (item.percentage / 100) * 360;
+      
+      // Update the current angle for the next item
+      currentAngle += itemArcSize;
+      
+      // Subtract half the gap from the end angle
+      const endAngle = currentAngle - gapSize / 2;
       
       return {
         ...item,
@@ -60,33 +70,37 @@ const Tokenomics = () => {
         return {
           nameRadius: 85,
           percentRadius: 85,
-          nameDy: -12,
-          percentDy: 12,
-          dotRadius: 70
+          nameDy: -20,
+          percentDy: 20,
+          dotRadius: 70,
+          dotSize: 4
         };
       case "Marketing":
         return {
           nameRadius: 85,
           percentRadius: 85,
-          nameDy: 0,
-          percentDy: 24,
-          dotRadius: 70
+          nameDy: -20,
+          percentDy: 20,
+          dotRadius: 70,
+          dotSize: 4
         };
       case "Team":
         return {
           nameRadius: 85,
           percentRadius: 85,
-          nameDy: -12,
-          percentDy: 12,
-          dotRadius: 70
+          nameDy: -20,
+          percentDy: 20,
+          dotRadius: 70,
+          dotSize: 4
         };
       default:
         return {
           nameRadius: 85,
           percentRadius: 85,
-          nameDy: -12,
-          percentDy: 12,
-          dotRadius: 70
+          nameDy: -20,
+          percentDy: 20,
+          dotRadius: 70,
+          dotSize: 4
         };
     }
   };
@@ -105,8 +119,10 @@ const Tokenomics = () => {
           <div className="relative w-full max-w-md">
             {/* SVG Pie Chart */}
             <svg viewBox="0 0 400 400" className="w-full">
+              {/* Dark background circle */}
               <circle cx="200" cy="200" r="150" fill="transparent" stroke="#1D2235" strokeWidth="30" />
               
+              {/* Segments with gaps */}
               {segments.map((segment, index) => {
                 const arcPath = createArcPath(200, 200, 150, segment.startAngle, segment.endAngle);
                 return (
@@ -136,7 +152,12 @@ const Tokenomics = () => {
                 
                 return (
                   <g key={`label-${index}`}>
-                    <circle cx={dotPosition.x} cy={dotPosition.y} r="4" fill={segment.color} />
+                    <circle 
+                      cx={dotPosition.x} 
+                      cy={dotPosition.y} 
+                      r={positions.dotSize} 
+                      fill={segment.color} 
+                    />
                     
                     {/* Name label */}
                     <text
