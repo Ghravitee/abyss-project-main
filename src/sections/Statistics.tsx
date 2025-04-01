@@ -6,22 +6,20 @@ import {
   pureTotalBidCount,
   totalPlayersCount,
   pureOverallTokensBidded,
-  // pureOverallUSDBidded,
+  pureOverallUSDBidded,
   pureBurntTokens,
   purePrizeThreshold,
   pureTimeRemaining,
   pureCurrentRound,
   pureBurntTokensUSDValue,
 } from "@/web3/readContracts";
+import { HiArrowPathRoundedSquare } from "react-icons/hi2";
+import { useState } from "react";
 
-<<<<<<< HEAD
-type StatisticsProps = {};
-
-const Statistics = ({ }: StatisticsProps) => {
-=======
 const Statistics = () => {
->>>>>>> dan-branch
+  const [showTooltip, setShowTooltip] = useState(false);
   if (totalPlayersCount === 0) return null;
+
   return (
     <section id="statistics" className="pt-[88px]">
       <motion.h2
@@ -45,40 +43,42 @@ const Statistics = () => {
             cardImage={statsCards[2].cardImage}
             title="Players Count"
             description={totalPlayersCount}
-            tooltipInfo="This indicates the number of active participants in the Abyss Pot event or game. "
+            tooltipInfo="This indicates the number of active participants in the Abyss Pot event or game. 
+"
           />
           <StatsCard
             cardImage={statsCards[4].cardImage}
             title="Total Pot Value (ABYSS | USD)"
-            description={`${Math.round(Number(pureOverallTokensBidded.toLocaleString(undefined, {
-              minimumFractionDigits: 4,
-              maximumFractionDigits: 4,
-<<<<<<< HEAD
-            })))} | $${(pureOverallUSDBidded.toLocaleString(undefined, {
+            description={`${Math.round(
+              Number(
+                pureOverallTokensBidded.toLocaleString(undefined, {
+                  minimumFractionDigits: 4,
+                  maximumFractionDigits: 4,
+                })
+              )
+            )} | $${pureOverallUSDBidded.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-            }))}`}
-=======
-            })}
-            tooltipInfo="Total amount of ABYSS tokens bid on the pot."
->>>>>>> dan-branch
+            })}`}
+            tooltipInfo="This represents the monetary value of the pot in U.S. dollars. 
+"
           />
           <StatsCard
             cardImage={statsCards[5].cardImage}
             title="Total Tokens Burnt (ABYSS | USD)"
-            description={`${Math.round(Number(pureBurntTokens.toLocaleString(undefined, {
-              minimumFractionDigits: 4,
-              maximumFractionDigits: 4,
-<<<<<<< HEAD
-            })))} | $${(pureBurntTokensUSDValue).toLocaleString(undefined, {
+            description={`${Math.round(
+              Number(
+                pureBurntTokens.toLocaleString(undefined, {
+                  minimumFractionDigits: 4,
+                  maximumFractionDigits: 4,
+                })
+              )
+            )} | $${pureBurntTokensUSDValue.toLocaleString(undefined, {
               minimumFractionDigits: 4,
               maximumFractionDigits: 4,
             })}`}
-=======
-            })}
             tooltipInfo="This metric shows how many Abyss tokens have been permanently removed from circulation (i.e., “burnt”). 
 "
->>>>>>> dan-branch
           />
         </motion.div>
         {/* Countdown Timer */}
@@ -94,17 +94,45 @@ const Statistics = () => {
           />
         </motion.div>
         {/* Right Stats Section */}
+
         <motion.div
           className="flex flex-col gap-6"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <StatsCard
-            cardImage={statsCards[0].cardImage}
-            title="Current Round"
-            description={Number(pureCurrentRound?.toLocaleString())}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.05 }}
+            className="relative bg-HowTo-Cards-Background border border-HowTo-Cards-border rounded-[20px] p-5 flex flex-col items-center w-full max-w-sm mx-auto"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            <HiArrowPathRoundedSquare className="mb-[24px] size-auto" />
+
+            <h3 className="mb-[10px] font-bold text-[20px] text-Light-Gray text-center">
+              Round
+            </h3>
+            <p className="text-Purple text-center font-bold text-[48px] font-raleway">
+              {Number(pureCurrentRound?.toLocaleString())}
+            </p>
+
+            {/* Tooltip */}
+            {showTooltip && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="absolute bottom-full mb-3 px-4 py-2 rounded-lg bg-Dark-Purple text-Light-Gray text-sm w-[250px] text-center shadow-lg border border-HowTo-Cards-border"
+              >
+                This is the current round
+              </motion.div>
+            )}
+          </motion.div>
+
           <StatsCard
             cardImage={statsCards[3].cardImage}
             title="Prize Threshold (USD)"
@@ -115,19 +143,12 @@ const Statistics = () => {
             tooltipInfo="This is the minimum prize value, expressed in USD, that must be reached before the 70%/30% split to occure 
 "
           />
-          {/* <StatsCard
-            cardImage={statsCards[1].cardImage}
-            title="Total Pot Value (USD)"
-            description={`$${(pureOverallUSDBidded.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }))}`}
-          /> */}
+
           <StatsCard
             cardImage={statsCards[0].cardImage}
             title="Bids Count"
             description={Number(pureTotalBidCount?.toLocaleString())}
-            tooltipInfo="Total number of bids made on the pot."
+            tooltipInfo="This indicates the total number of bids that have been placed."
           />
         </motion.div>
       </div>
