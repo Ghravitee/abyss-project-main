@@ -50,7 +50,6 @@ import {
   fetchPureRoundBidCount,
   fetchPureRoundWinner,
   fetchPureRandomWinnersByRound,
-  pureMostRecentBids,
 } from "@/web3/readContracts";
 import BidNotification from "@/web3/BidNotification";
 
