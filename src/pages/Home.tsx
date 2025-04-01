@@ -6,6 +6,7 @@ import HowTowin from "@/sections/HowTowin";
 import Navbar from "@/sections/Navbar";
 import ReadyToPlay from "@/sections/ReadyToPlay";
 import Statistics from "@/sections/Statistics";
+import Tokenomics from "@/sections/Tokenomics";
 
 const Home = () => {
   return (
@@ -18,6 +19,7 @@ const Home = () => {
         <HowItWorks />
         <Statistics />
         <HowTowin />
+        <Tokenomics />
       </div>
       <ReadyToPlay />
       <Cta />
