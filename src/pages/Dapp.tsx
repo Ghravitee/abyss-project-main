@@ -1134,7 +1134,7 @@ function Dapp() {
                     {isLoadingRoundBidCount ? (
                       <p>Loading round bid count...</p>
                     ) : isConnected && getRoundBidCount ? (
-                      <p>
+                      <p className="mb-4">
                         Total Bid for Round {selectedRound}:{" "}
                         {getRoundBidCount?.toString()} BIDS
                       </p>
@@ -1194,16 +1194,16 @@ function Dapp() {
                   <table className="w-full mt-4 border-collapse border border-HowTo-Cards-border">
                     <thead>
                       <tr className="">
-                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                        <th className="border border-HowTo-Cards-border px-3 py-2 text-left">
                           Player
                         </th>
-                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                        <th className="border border-HowTo-Cards-border px-3 py-2 text-left">
                           Timestamp
                         </th>
-                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                        <th className="border border-HowTo-Cards-border px-3 py-2 text-left">
                           Tokens Bidded
                         </th>
-                        <th className="border border-HowTo-Cards-border px-3 py-2">
+                        <th className="border border-HowTo-Cards-border px-3 py-2 text-left">
                           USD Value
                         </th>
                       </tr>
@@ -1211,18 +1211,18 @@ function Dapp() {
                     <tbody>
                       {filteredPureBids.map((bid, index) => (
                         <tr key={index} className="text-center">
-                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                          <td className="border border-HowTo-Cards-border px-3 py-2 text-left">
                             {bid.bidder}
                           </td>
-                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                          <td className="border border-HowTo-Cards-border px-3 py-2 text-left">
                             {new Date(
                               Number(bid.timestamp) * 1000
                             ).toLocaleString()}
                           </td>
-                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                          <td className="border border-HowTo-Cards-border px-3 py-2 text-left">
                             {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
                           </td>
-                          <td className="border border-HowTo-Cards-border px-3 py-2">
+                          <td className="border border-HowTo-Cards-border px-3 py-2 text-left">
                             ${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}
                           </td>
                         </tr>
@@ -1352,7 +1352,7 @@ function Dapp() {
                       <div className="border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar">
                         <table className="w-full border-collapse">
                           <thead>
-                            <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                            <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px] border-b border-b-HowTo-Cards-border">
                               <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                 Ranks
                               </th>
@@ -1494,7 +1494,7 @@ function Dapp() {
                     <div className="max-w-[1300px] mx-auto border border-HowTo-Cards-border rounded-md overflow-x-auto custom-scrollbar mt-20">
                       <table className="w-full border-collapse">
                         <thead>
-                          <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px]">
+                          <tr className="text-Light-Gray-1 font-medium text-left text-[14px] md:text-[16px] border-b border-b-HowTo-Cards-border">
                             <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                               Rank
                             </th>
@@ -1665,17 +1665,17 @@ function Dapp() {
                           <h5 className="text-lg font-semibold text-purple mb-3">
                             Last Bid Winner
                           </h5>
-                          <div className="overflow-x-auto custom-scrollbar mt-6">
-                            <table className="w-full border border-howTo-cards-border rounded-lg overflow-hidden">
+                          <div className="overflow-x-auto custom-scrollbar mt-6 border border-HowTo-Cards-border rounded-lg">
+                            <table className="w-full border border-HowTo-Cards-border rounded-lg overflow-hidden">
                               <thead>
                                 <tr className="bg-purple text-white">
-                                  <th className="px-4 py-2 text-left">
+                                  <th className="p-2 md:p-3 border-r border-HowTo-Cards-border text-left">
                                     Address
                                   </th>
-                                  <th className="px-4 py-2 text-left">
+                                  <th className="p-2 md:p-3 border-r border-HowTo-Cards-border text-left">
                                     Prize Tokens
                                   </th>
-                                  <th className="px-4 py-2 text-left">
+                                  <th className="p-2 md:p-3 border-r border-HowTo-Cards-border text-left">
                                     Prize USD
                                   </th>
                                 </tr>
