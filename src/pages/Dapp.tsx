@@ -52,6 +52,7 @@ import {
   fetchPureRandomWinnersByRound,
   pureMostRecentBids,
 } from "@/web3/readContracts";
+import BidNotification from "@/web3/BidNotification";
 
 function Dapp() {
   // State for errors, processing status, and transaction type.
@@ -73,7 +74,7 @@ function Dapp() {
   const [pureRoundBidCount, setPureRoundBidCount] = useState<any>(null);
   const [pureRoundWinner, setPureRoundWinner] = useState<any>(null);
   const [pureRandomWinnersByRound, setPureRandomWinnersByRound] = useState<any>(null);
-
+  const [notification, setNotification] = useState('');
 
   // const chainId = useChainId();
   // const isSepoliaTestnet = chainId === testChainID;
@@ -264,6 +265,17 @@ function Dapp() {
     functionName: "getRoundBidCount",
     args: [selectedRound as unknown as bigint],
   });
+
+  const {
+    data: getCurrentRoundBidCount,
+    isLoading: isLoadingCurrentRoundBidCount,
+    refetch: refetchCurrentRoundBidCount,
+  } = useReadContract({
+    ...POT_ABI,
+    functionName: "getRoundBidCount",
+    args: [getCurrentRound as unknown as bigint],
+  });
+
   const {
     data: getTokenBurnt,
     isLoading: isLoadingTokenBurnt,
@@ -379,6 +391,11 @@ function Dapp() {
       .sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
   }, [pureBidHistoryByRound, searchAddress, startDateTime, endDateTime]);
 
+  // Helper function to shorten the address
+  const shortenAddress = (address: string | any[]) =>
+    `${address.slice(0, 5)}...${address.slice(-3)}`;
+
+
   // Check if approval is needed whenever allowance or bidAmount changes.
   useEffect(() => {
     if (
@@ -420,6 +437,36 @@ function Dapp() {
       if (timer) clearInterval(timer);
     };
   }, [isTimerRunning]); // Remove countdown from the dependency array
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchMostRecentBids();
+    }, 5000); // every 5 seconds; adjust as needed
+    return () => clearInterval(interval);
+  }, [refetchMostRecentBids]);
+
+  useEffect(() => {
+    if (getMostRecentBids && !isLoadingMostRecentBids) {
+      // Assume mostRecentBid is an array with the latest bid data in the first element.
+      // Adjust destructuring according to the returned structure.
+      const latestBid = getMostRecentBids[0];
+      const { bidder, timestamp } = latestBid; // adjust property names as needed
+
+      // Calculate how many seconds ago the bid occurred
+      const ago = timeAgo(Number(timestamp));
+      // Format the notification message
+      const formattedMessage = `${shortenAddress(bidder)} bidded | ${ago} `;
+
+      // Set notification which will be visible until cleared
+      setNotification(formattedMessage);
+
+      // Clear the notification after 5 seconds (or any time you choose)
+      const timer = setTimeout(() => {
+        setNotification('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [getMostRecentBids, isLoadingMostRecentBids]);
 
   const burntTokens = useMemo(() => {
     if (!getTokenBurnt || !decimals) return 0;
@@ -511,6 +558,7 @@ function Dapp() {
       refetchTokenBurnt();
       refetchGameActive();
       refetchIsGameExpired();
+      refetchCurrentRoundBidCount();
       refetchPlayerStats();
       refetchTotalBidCount();
       refetchGetAbyssUSDPrice();
@@ -531,6 +579,7 @@ function Dapp() {
     refetchBidHistory,
     refetchPlayerStats,
     refetchTotalBidCount,
+    refetchCurrentRoundBidCount,
     refetchRandomWinnersByRound,
     refetchBalance,
     refetchRoundWinner,
@@ -604,7 +653,11 @@ function Dapp() {
   return (
     <div className="">
       <DappNavbar />
-      {/* <h3>Welcome user {address}</h3> */}
+      {isConnected && notification && (
+        <div className="bg-yellow-100 text-gray-800 text-center py-2 font-bold z-50 animate-pulse">
+          {notification}
+        </div>
+      ) || <BidNotification />}
 
       {/* Dan's ui */}
       {/* Dan's ui */}
@@ -616,8 +669,8 @@ function Dapp() {
         <div className="size-[20rem] bg-[#A510D6] rounded-[50%] absolute top-0 left-0 right-0 mx-auto blur-[200px]"></div>
 
         <DappStatistics
-          isLoadingTotalBidCount={isLoadingTotalBidCount}
-          getTotalBidCount={getTotalBidCount}
+          isLoadingCurrentRoundBidCount={isLoadingCurrentRoundBidCount}
+          getCurrentRoundBidCount={getCurrentRoundBidCount}
           isConnected={isConnected}
           isLoadingPlayerCount={isLoadingGetPlayerCount}
           getPlayerCount={getPlayerCount}
@@ -628,6 +681,7 @@ function Dapp() {
           isLoadingPrizeThreshold={isLoadingPrizeThreshold}
           prizeThreshold={prizeThreshold}
           decimals={decimals}
+          isLoadingDecimals={isLoadingDecimals}
           getTimeRemaining={getTimeRemaining}
           isLoadingGetCurrentRound={isLoadingGetCurrentRound}
           getCurrentRound={getCurrentRound}
@@ -874,6 +928,8 @@ function Dapp() {
                     No bid history found.
                   </p>
                 )}
+                isGameExpired: {isGameExpired}
+                GetTimeRemaining: {getTimeRemaining}
               </motion.div>
             </motion.div>
             <motion.div
@@ -898,7 +954,8 @@ function Dapp() {
                       isLoadingAllowance ||
                       isLoadingBidAmount ||
                       isProcessingTxn ||
-                      isGameExpired
+                      isGameExpired ||
+                      getTimeRemaining === 0n
                     }
                     onClick={handleBidProcess}
                     className={`cursor-pointer px-10 py-3 rounded-full font-bold text-[18px] transition-all duration-300 ease-in-out
@@ -908,7 +965,7 @@ function Dapp() {
                       }
       `}
                   >
-                    {isGameExpired ? (
+                    {isGameExpired || getTimeRemaining === 0n ? (
                       <>
                         <span className="mr-2">🚫</span> {getButtonText()}
                       </>
@@ -976,10 +1033,6 @@ function Dapp() {
         )}
 
         <div className="bg-Purple my-[50px] w-full h-[1px]" />
-
-        {/* Round Data */}
-        {/* Round Data */}
-        {/* Round Data */}
       </div>
 
       {/* Experimental tabs */}
@@ -1170,7 +1223,7 @@ function Dapp() {
           {activeTab === "tab2" && (
             <div className=" p-4 lg:pt-6 rounded-lg">
               <span className="font-medium">
-                {isLoadingLeaderboard ? (
+                {isLoadingLeaderboard && isLoadingTotalBidCount ? (
                   <span className="h-5 w-20 bg-gray-600 rounded-md animate-pulse inline-block"></span>
                 ) : isConnected && leaderboard && leaderboard.length > 0 ? (
                   <>
@@ -1730,79 +1783,6 @@ function Dapp() {
           )}
         </div>
       </div >
-
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      {/* Theo's web3 code */}
-      <div>
-        <div className="round-data">
-          <div>
-            <h4>Most Recent Bids</h4>
-            {isLoadingMostRecentBids ? (
-              <p>Loading most recent bids...</p>
-            ) : isConnected && getMostRecentBids && getMostRecentBids.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Player</th>
-                    <th>Timestamp</th>
-                    <th>Tokens Bidded</th>
-                    <th>USD Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...getMostRecentBids]
-                    .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
-                    .map((bid, index) => (
-                      <tr key={index}>
-                        <td>{bid.bidder}</td>
-                        <td>
-                          {new Date(
-                            Number(bid.timestamp) * 1000
-                          ).toLocaleString()}
-                        </td>
-                        <td>
-                          {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                        </td>
-                        <td>${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            ) : pureMostRecentBids && pureMostRecentBids.length > 0 ? (<table>
-              <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>Timestamp</th>
-                  <th>Tokens Bidded</th>
-                  <th>USD Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...pureMostRecentBids]
-                  .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
-                  .map((bid, index) => (
-                    <tr key={index}>
-                      <td>{bid.bidder}</td>
-                      <td>
-                        {new Date(
-                          Number(bid.timestamp) * 1000
-                        ).toLocaleString()}
-                      </td>
-                      <td>
-                        {(Number(bid.tokensBidded) / 10 ** 18).toFixed(4)}
-                      </td>
-                      <td>${(Number(bid.usdValue) / 10 ** 18).toFixed(2)}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>) : (
-              <p>No recent bids found.</p>
-            )}
-          </div>
-        </div>
-      </div>
     </div >
   );
 }

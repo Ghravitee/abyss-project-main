@@ -11,11 +11,12 @@ import {
   purePrizeThreshold,
   pureTimeRemaining,
   pureCurrentRound,
+  pureBurntTokensUSDValue,
 } from "@/web3/readContracts";
 
 type StatisticsProps = {};
 
-const Statistics = ({}: StatisticsProps) => {
+const Statistics = ({ }: StatisticsProps) => {
   if (totalPlayersCount === 0) return null;
   return (
     <section id="statistics" className="pt-[88px]">
@@ -26,7 +27,7 @@ const Statistics = ({}: StatisticsProps) => {
         transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
         viewport={{ once: true }}
       >
-        Statistics
+        Overall Statistics
       </motion.h2>
       <div className="grid grid-cols-1 lg:grid-cols-[.3fr_.4fr_.3fr] mt-8 gap-5 items-center px-4">
         {/* Left Stats Section */}
@@ -43,19 +44,25 @@ const Statistics = ({}: StatisticsProps) => {
           />
           <StatsCard
             cardImage={statsCards[4].cardImage}
-            title="Total Pot Value (ABYSS)"
-            description={pureOverallTokensBidded.toLocaleString(undefined, {
+            title="Total Pot Value (ABYSS | USD)"
+            description={`${Math.round(Number(pureOverallTokensBidded.toLocaleString(undefined, {
               minimumFractionDigits: 4,
               maximumFractionDigits: 4,
-            })}
+            })))} | $${(pureOverallUSDBidded.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }))}`}
           />
           <StatsCard
             cardImage={statsCards[5].cardImage}
-            title="Total Tokens Burnt (ABYSS)"
-            description={pureBurntTokens.toLocaleString(undefined, {
+            title="Total Tokens Burnt (ABYSS | USD)"
+            description={`${Math.round(Number(pureBurntTokens.toLocaleString(undefined, {
               minimumFractionDigits: 4,
               maximumFractionDigits: 4,
-            })}
+            })))} | $${(pureBurntTokensUSDValue).toLocaleString(undefined, {
+              minimumFractionDigits: 4,
+              maximumFractionDigits: 4,
+            })}`}
           />
         </motion.div>
         {/* Countdown Timer */}
@@ -90,14 +97,14 @@ const Statistics = ({}: StatisticsProps) => {
               10 ** 18
             ).toLocaleString()}`}
           />
-          <StatsCard
+          {/* <StatsCard
             cardImage={statsCards[1].cardImage}
             title="Total Pot Value (USD)"
-            description={`$${pureOverallUSDBidded.toLocaleString(undefined, {
+            description={`$${(pureOverallUSDBidded.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-            })}`}
-          />
+            }))}`}
+          /> */}
           <StatsCard
             cardImage={statsCards[0].cardImage}
             title=" Total Bids"

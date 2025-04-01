@@ -49,19 +49,7 @@ function Admin() {
         ...TOKEN_ABI,
         functionName: "symbol",
     });
-    const { data: name } = useReadContract({
-        ...TOKEN_ABI,
-        functionName: "name",
-    });
-    const {
-        data: balance,
-        isLoading: isLoadingBalance,
-        refetch: refetchBalance,
-    } = useReadContract({
-        ...TOKEN_ABI,
-        functionName: "balanceOf",
-        args: [address as `0xA008DF6bf68F4051B3F664Ef6DF86eDB97a177CB`],
-    });
+    
     const { data: decimals, isLoading: isLoadingDecimals } = useReadContract({
         ...TOKEN_ABI,
         functionName: "decimals",
@@ -74,15 +62,6 @@ function Admin() {
         ...POT_ABI,
         functionName: "gameActive",
     });
-    const {
-        data: bidAmount,
-        isLoading: isLoadingBidAmount,
-        refetch: refetchBidAmount,
-    } = useReadContract({
-        ...POT_ABI,
-        functionName: "bidAmount",
-    });
-
     // Read additional pot data.
     const {
         data: getTimeRemaining,
@@ -165,12 +144,13 @@ function Admin() {
         functionName: "isGameExpired",
     });
     const {
-        data: getTotalBidCount,
-        isLoading: isLoadingTotalBidCount,
-        refetch: refetchTotalBidCount,
+        data: getCurrentRoundBidCount,
+        isLoading: isLoadingCurrentRoundBidCount,
+        refetch: refreshCurrentRoundBidCount,
     } = useReadContract({
         ...POT_ABI,
-        functionName: "getTotalBidCount",
+        functionName: "getRoundBidCount",
+        args: [getCurrentRound as unknown as bigint]
     });
     const {
         data: leaderboard,
@@ -180,18 +160,6 @@ function Admin() {
         ...POT_ABI,
         functionName: "getLeaderboard",
     });
-
-    // Format the balance for display.
-    let formattedBalance = "0";
-    if (
-        !isLoadingBalance &&
-        !isLoadingDecimals &&
-        balance !== undefined &&
-        decimals !== undefined
-    ) {
-        const balanceNumber = Number(balance) / 10 ** Number(decimals);
-        formattedBalance = balanceNumber.toLocaleString();
-    }
 
     // Function to start the game.
     const handleStartGame = () => {
@@ -279,9 +247,8 @@ function Admin() {
     // When the transaction is confirmed, refresh values and reset the current action.
     useEffect(() => {
         if (isConfirmed && txHash) {
-            refetchBalance();
-            refetchBidAmount();
             refetchTimeRemaining();
+            refreshCurrentRoundBidCount();
             refetchGetLatestETHPrice();
             refetchIsGameExpired();
             refetchGetAbyssUSDPrice();
@@ -289,7 +256,6 @@ function Admin() {
             refetchGameActive();
             refetchPotValueInUSD();
             refetchLeaderboard();
-            refetchTotalBidCount();
             refetchGetCurrentRound();
             refetchGetPlayerCount();
             refetchPrizeThreshold();
@@ -299,13 +265,11 @@ function Admin() {
     }, [
         isConfirmed,
         txHash,
-        refetchBalance,
-        refetchBidAmount,
         refetchGetLatestETHPrice,
+        refreshCurrentRoundBidCount,
         refetchIsGameExpired,
         refetchGetAbyssUSDPrice,
         refetchGameActive,
-        refetchTotalBidCount,
         refetchTimeRemaining,
         refetchPotValue,
         refetchPotValueInUSD,
@@ -357,8 +321,8 @@ function Admin() {
                             </div>
                         </div>
                         <DappStatistics
-                            isLoadingTotalBidCount={isLoadingTotalBidCount}
-                            getTotalBidCount={getTotalBidCount}
+                            isLoadingCurrentRoundBidCount={isLoadingCurrentRoundBidCount}
+                            getCurrentRoundBidCount={getCurrentRoundBidCount}
                             isConnected={isConnected}
                             isLoadingPlayerCount={isLoadingGetPlayerCount}
                             getPlayerCount={getPlayerCount}
@@ -369,6 +333,7 @@ function Admin() {
                             isLoadingPrizeThreshold={isLoadingPrizeThreshold}
                             prizeThreshold={prizeThreshold}
                             decimals={decimals}
+                            isLoadingDecimals={isLoadingDecimals}
                             getTimeRemaining={getTimeRemaining}
                             isLoadingGetCurrentRound={isLoadingGetCurrentRound}
                             getCurrentRound={getCurrentRound}
@@ -385,7 +350,7 @@ function Admin() {
                                 <div className="flex flex-col justify-center items-center gap-2">
                                     <img src={chip} className="size-[25px]" />
                                     <p className="text-[20px] font-bold">
-                                        Overall Data Statistics
+                                        Overall Statistics
                                     </p>
                                 </div>
                             </div>
@@ -433,7 +398,7 @@ function Admin() {
                                 </span>
                             </p>
 
-                            <p className="flex justify-between">
+                            {/* <p className="flex justify-between">
                                 <span className="text-light-gray-1">Pot Value (USD):</span>
                                 <span className="font-medium">
                                     {isLoadingPotValueInUSD
@@ -443,7 +408,7 @@ function Admin() {
                                             10 ** (decimals ? Number(decimals) : 18)
                                         ).toLocaleString()}`}
                                 </span>
-                            </p>
+                            </p> */}
 
                             <p className="flex justify-between">
                                 <span className="text-light-gray-1">Current Round:</span>
@@ -741,186 +706,6 @@ function Admin() {
                         ? "Loading..."
                         : (Number(getAbyssUSDPrice) / 10 ** 18).toFixed(4)}
                 </p>
-                <p>
-                    Total Bids: {isLoadingTotalBidCount ? "Loading..." : getTotalBidCount}
-                </p>
-
-                <div className="token-info">
-                    <p>Token: {name || "Loading..."}</p>
-                    <p>
-                        Your Token Balance:{" "}
-                        {isLoadingBalance || isLoadingDecimals
-                            ? "Loading..."
-                            : `${formattedBalance} ${symbol}`}
-                    </p>
-                    {!isLoadingBidAmount && bidAmount && (
-                        <p>
-                            Required Bid Amount:{" "}
-                            {Number(bidAmount) / 10 ** (decimals ? Number(decimals) : 18)}{" "}
-                            {symbol}
-                        </p>
-                    )}
-                </div>
-
-                {/* Display extra pot information */}
-                <div className="pot-info">
-                    <h4>Pot Info</h4>
-                    {!isLoadingIsGameExpired &&
-                        isGameExpired &&
-                        !isLoadingGetCurrentRound && (
-                            <p>
-                                Round {getCurrentRound} has expired, waiting to start a new
-                                Round!
-                            </p>
-                        )}
-                    <p>
-                        Time Remaining:{" "}
-                        {isLoadingTimeRemaining
-                            ? "Loading..."
-                            : formatTimeRemaining(countdown)}
-                    </p>
-                    <p>
-                        Current Pot Value:{" "}
-                        {isLoadingPotValue
-                            ? "Loading..."
-                            : (
-                                Number(getPotValue) /
-                                10 ** (decimals ? Number(decimals) : 18)
-                            ).toLocaleString()}{" "}
-                        {symbol}
-                    </p>
-                    <p>
-                        Pot Value (USD): {"$"}
-                        {isLoadingPotValueInUSD
-                            ? "Loading..."
-                            : (
-                                Number(getPotValueInUSD) /
-                                10 ** (decimals ? Number(decimals) : 18)
-                            ).toLocaleString()}
-                    </p>
-                    <p>
-                        Current Round:{" "}
-                        {isLoadingGetCurrentRound ? "Loading..." : getCurrentRound}
-                    </p>
-                    <p>
-                        Players: {isLoadingGetPlayerCount ? "Loading..." : getPlayerCount}
-                    </p>
-                    <p>
-                        Prize Threshold: {"$"}
-                        {isLoadingPrizeThreshold
-                            ? "Loading..."
-                            : (
-                                Number(prizeThreshold) /
-                                10 ** (decimals ? Number(decimals) : 18)
-                            ).toLocaleString()}
-                    </p>
-                    <p>Last Bidder: {isLoadingLastBidder ? "Loading..." : lastBidder}</p>
-                </div>
-
-                {/* Admin action buttons */}
-                <div className="">
-                    <button disabled={isProcessing} onClick={handleStartGame}>
-                        {isProcessing && currentAction === "start"
-                            ? "Starting Game..."
-                            : "Start Game"}
-                    </button>
-                    <button disabled={isProcessing} onClick={handleEndRound}>
-                        {isProcessing && currentAction === "end"
-                            ? "Ending Round..."
-                            : "End Round"}
-                    </button>
-
-                    <button
-                        disabled={isProcessing}
-                        onClick={handleForceEndAndStartNewGame}
-                    >
-                        {isProcessing && currentAction === "force"
-                            ? "Processing..."
-                            : "Force End & Start New Game"}
-                    </button>
-                    <div>
-                        <div className="random-winner-selection">
-                            <label htmlFor="requestID">Request ID:</label>
-                            <input
-                                id="requestID"
-                                type="number"
-                                onChange={(e) => setRequestIDs(BigInt(e.target.value))}
-                            />
-                        </div>
-                        <button
-                            disabled={isProcessing || requestIDs === null}
-                            onClick={handleRandomWinnerSelection}
-                        >
-                            {isProcessing && currentAction === "randomWinners"
-                                ? "Selecting Winner..."
-                                : "Select Random Winner"}
-                        </button>
-                    </div>
-                </div>
-
-                {isConfirming && (
-                    <div className="status-message">
-                        <p>Waiting for confirmation...</p>
-                        <p className="tx-hash">Transaction: {txHash}</p>
-                    </div>
-                )}
-
-                {errorMsg && <div className="error-message">{errorMsg}</div>}
-                {error && (
-                    <div className="error-message">
-                        Error: {(error as BaseError).shortMessage || error.message}
-                    </div>
-                )}
-                {/* <ConnectButton /> */}
-
-                <div className="leaderboard">
-                    <h3>Leaderboard</h3>
-                    {isLoadingLeaderboard ? (
-                        <p>Loading leaderboard...</p>
-                    ) : leaderboard && leaderboard.length > 0 ? (
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Player</th>
-                                    <th>Total Bids</th>
-                                    <th>Total Tokens Bidded</th>
-                                    <th>Total USD Bidded</th>
-                                    <th>First Bid</th>
-                                    <th>Last Bid</th>
-                                    <th>First Bid Amount</th>
-                                    <th>Last Bid Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {leaderboard.map((entry: any, index: number) => {
-                                    const formattedEntry = formatLeaderboardEntry(entry);
-                                    return (
-                                        <tr key={entry.player}>
-                                            <td>{index + 1}</td>
-                                            <td>{formattedEntry.player}</td>
-                                            <td>{formattedEntry.totalBids}</td>
-                                            <td>
-                                                {formattedEntry.totalTokensBidded} {symbol}
-                                            </td>
-                                            <td>${formattedEntry.totalUSDBidded}</td>
-                                            <td>{formattedEntry.firstBidTimestamp}</td>
-                                            <td>{formattedEntry.lastBidTimestamp}</td>
-                                            <td>
-                                                {formattedEntry.firstBidAmount} {symbol}
-                                            </td>
-                                            <td>
-                                                {formattedEntry.lastBidAmount} {symbol}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p>No leaderboard entries found.</p>
-                    )}
-                </div>
             </div>
         );
     }

@@ -146,7 +146,7 @@ export const pureCurrentRoundBidHistory = await publicClient.readContract({
 export const pureMostRecentBids = await publicClient.readContract({
     ...POT_ABI,
     functionName: "getMostRecentBids",
-    args: [3 as unknown as bigint],
+    args: [1 as unknown as bigint],
 });
 
 export const pureCurrentRoundBidCount = await publicClient.readContract({
