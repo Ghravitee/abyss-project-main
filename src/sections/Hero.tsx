@@ -28,7 +28,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           >
-            Where Timing Is Everything
+            Bringing Fun Back to Crypto
           </motion.h2>
 
           {/* Description */}
@@ -38,10 +38,9 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
           >
-            Welcome to Abyss Pot – the ultimate crypto game of nerve, strategy,
-            and timing. With every bid, you’re not just playing a game; you’re
-            part of an evolving challenge where every move counts and every
-            token makes a difference.
+            In the midst of market chaos, AbyssPot injects excitement into the
+            crypto space. This simple yet thrilling game offers a refreshing
+            escape from the dull and frustrating market conditions.
           </motion.p>
 
           {/* Animated Button */}

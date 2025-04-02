@@ -9,15 +9,15 @@ import Modal from "@/components/Modal";
 const HowToWin = [
   {
     image: emptyPot,
-    title: "Under $15,000 Pot",
-    desc: "If the pot is below $15,000, the last player to bid when the timer runs out takes the entire prize.",
+    title: "Pot Under $15,000",
+    desc: "If the countdown hits zero and the pot is below $15,000, the last bidder wins it all.",
   },
   {
     image: filledPot,
-    title: "Above $15,000 Pot",
-    desc: "Once the pot reaches $15,000, the game shifts:",
-    addon1: "30% goes to the last bidder.",
-    addon2: "70% is split among nine random participants from the game.",
+    title: "Pot at or Above $15,000",
+    desc: "If no new bids are placed for 24 hours after reaching $15,000, the pot is split:",
+    addon1: "30% to the last bidder",
+    addon2: "70% distributed among nine randomly selected players",
   },
 ];
 

@@ -34,8 +34,10 @@ const Cta = () => {
               The abyss awaits — dare to take the plunge?
             </h2>
             <p className="text-[18px] text-Light-Gray-1 max-w-[35rem]">
-              Join Abyss Pot today, place your bid, and test your timing against
-              a global community of crypto enthusiasts.
+              AbyssPot creates a dynamic, blockchain-powered environment where
+              every bid could be game-changing. Backed by a fair and transparent
+              tokenomics model, $ABYSS supports liquidity, growth, and the team
+              behind this groundbreaking project.
             </p>
           </motion.div>
           <motion.div

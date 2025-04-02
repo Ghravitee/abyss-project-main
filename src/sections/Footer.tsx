@@ -24,18 +24,16 @@ const Footer = () => {
           </div>
           {/* Social links */}
           <div className="flex items-center space-x-4 mb-[32px]">
-            {[telegram, twitter, gitbook].map(
-              (icon, index) => (
-                <motion.a
-                  key={index}
-                  href="#"
-                  whileHover={{ scale: 1.2 }}
-                  className="flex items-center justify-center size-[34px] rounded-full bg-Purple"
-                >
-                  <img src={icon} alt="" />
-                </motion.a>
-              )
-            )}
+            {[telegram, twitter, gitbook].map((icon, index) => (
+              <motion.a
+                key={index}
+                href="#"
+                whileHover={{ scale: 1.2 }}
+                className="flex items-center justify-center size-[34px] rounded-full bg-Purple"
+              >
+                <img src={icon} alt="" />
+              </motion.a>
+            ))}
           </div>
           <p className="text-Light-Gray-1 hidden lg:block text-left">
             2025 AbyssPot. All rights reserved
@@ -50,7 +48,7 @@ const Footer = () => {
           transition={{ delay: 0.5 }}
         >
           <p className="text-Light-Gray-1 text-center">
-            AbyssPot - Where Timing is Everything
+            Step into AbyssPot—where strategy meets innovation!
           </p>
         </motion.div>
         <p className="text-Light-Gray-1 text-sm block lg:hidden ">

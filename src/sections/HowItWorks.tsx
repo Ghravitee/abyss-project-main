@@ -22,17 +22,18 @@ const HowItWorks = () => {
         >
           How it Works
         </motion.h2>
-
-        {/* Animated Subtitle */}
-        <motion.h3
-          className="text-[18px] font-normal text-Light-Gray-1 text-center mb-[66px]"
-          initial={{ opacity: 0, y: -10 }}
+        <motion.p
+          className="text-[18px] font-normal text-Light-Gray-1 text-center mb-[66px] max-w-[800px] mx-auto"
+          initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
           viewport={{ once: true }}
         >
-          Learn all about how AbyssPot works
-        </motion.h3>
+          AbyssPot is an innovative bidding game that combines competitive
+          excitement with blockchain technology in a unique Gaming dApp. Players
+          place bids of 100 $ABYSS tokens, each bid resetting a countdown timer
+          and increasing the stakes.
+        </motion.p>
 
         {/* Animated Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[26px]">

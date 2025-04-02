@@ -6,8 +6,8 @@ interface TokenomicsItem {
 
 const Tokenomics = () => {
   const tokenDistribution: TokenomicsItem[] = [
-    { name: "Liquidity", percentage: 85, color: "#00FF00" },
-    { name: "Marketing", percentage: 10, color: "#A510D6" },
+    { name: "Liquidity", percentage: 80, color: "#00FF00" },
+    { name: "Marketing", percentage: 15, color: "#A510D6" },
     { name: "Team", percentage: 5, color: "#FFF200" },
   ];
 
@@ -131,8 +131,8 @@ const Tokenomics = () => {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4 text-white">Tokenomics</h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Our token distribution is designed to ensure long-term stability and
-            growth.
+            The AbyssPot ecosystem is powered by the $ABYSS token, structured
+            for sustainability and growth.
           </p>
         </div>
 
@@ -262,7 +262,6 @@ const Tokenomics = () => {
               })}
             </svg>
           </div>
-
           <div className="w-full max-w-md">
             <div className="bg-HowItWorks-Cards-Background border border-HowTo-Cards-border rounded-xl p-8 shadow-xl">
               <h3 className="text-2xl font-bold mb-6 text-white">
@@ -299,11 +298,27 @@ const Tokenomics = () => {
                 ))}
               </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-700">
-                <p className="text-gray-300">
-                  Our token distribution prioritizes liquidity to ensure market
-                  stability, while allocating appropriate percentages for
-                  marketing initiatives and team development.
+              <div className="mt-8 pt-6 border-t border-HowTo-Cards-border">
+                <h3 className="text-2xl font-bold mb-4 text-white">
+                  Token Details
+                </h3>
+                <ul className="text-white grid grid-cols-1 sm:grid-cols-2 gap-4 ">
+                  <li className="text-xl ">
+                    <span className="font-bold">Name:</span> AbyssPot
+                  </li>
+                  <li className="text-xl">
+                    <span className="font-bold">Ticker:</span> $ABYSS
+                  </li>
+                  <li className="text-xl">
+                    <span className="font-bold">Total Supply:</span> 10,000,000
+                  </li>
+                  <li className="text-xl">
+                    <span className="font-bold">Decimals:</span> 18
+                  </li>
+                </ul>
+                <p className="text-center text-xl font-bold mt-4">
+                  Tax: <span className="text-Purple">5/5</span> (For marketing
+                  and development)
                 </p>
               </div>
             </div>
