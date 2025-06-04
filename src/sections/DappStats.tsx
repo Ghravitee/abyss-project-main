@@ -235,8 +235,7 @@ const DappStatistics = ({
               )
             }
             loading={isLoadingPrizeThreshold && isLoadingDecimals}
-            tooltipInfo="This is the minimum prize value, expressed in USD, that must be reached before the 70%/30% split to occure 
-"
+            tooltipInfo="This is the minimum prize value expressed in USD, that must be reached before the 70/30% split occurs."
           />
 
           <StatsCard
