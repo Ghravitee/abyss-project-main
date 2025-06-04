@@ -323,6 +323,11 @@ function Dapp() {
     };
   };
 
+  const truncateAddress = (address: string) => {
+    if (!address) return "";
+    return `${address.slice(0, 4)}...${address.slice(-5)}`;
+  };
+
   // Compute overall totals using useMemo
   const overallTokensBidded = useMemo(() => {
     if (!leaderboard) return 0;
@@ -1244,11 +1249,11 @@ function Dapp() {
                 ) : isConnected && leaderboard && leaderboard.length > 0 ? (
                   <>
                     <div className="  ">
-                      {/* Overall Totals Section */}
+                      {/* Overall Stats Section */}
                       <div>
                         <div className="max-w-[40rem] mx-auto mt-6 border border-HowTo-Cards-border rounded-md p-4 mb-6">
                           <h4 className="text-white font-bold text-xl lg:text-3xl border-b border-HowTo-Cards-border text-center">
-                            Overall Totals
+                            Overall Stats
                           </h4>
                           <div className="flex justify-between items-center lg:text-xl text-lg">
                             <p className="text-white mt-2">
@@ -1374,12 +1379,12 @@ function Dapp() {
                               <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                 Last Bid
                               </th>
-                              <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                              {/* <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                 First Bid Amount
                               </th>
                               <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                 Last Bid Amount
-                              </th>
+                              </th> */}
                             </tr>
                           </thead>
                           <tbody>
@@ -1398,7 +1403,7 @@ function Dapp() {
                                     {index + 1}
                                   </td>
                                   <td className="p-2 md:p-3 border-r border-HowTo-Cards-border text-Purple">
-                                    {formattedEntry.player}
+                                    {truncateAddress(formattedEntry.player)}
                                   </td>
                                   <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                     {formattedEntry.totalBids}
@@ -1415,12 +1420,12 @@ function Dapp() {
                                   <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                     {formattedEntry.lastBidTimestamp}
                                   </td>
-                                  <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                  {/* <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                     {formattedEntry.firstBidAmount} {symbol}
                                   </td>
                                   <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                     {formattedEntry.lastBidAmount} {symbol}
-                                  </td>
+                                  </td> */}
                                 </motion.tr>
                               );
                             })}
@@ -1431,10 +1436,10 @@ function Dapp() {
                   </>
                 ) : pureLeaderboard && pureLeaderboard.length > 0 ? (
                   <>
-                    {/* Pure Overall Totals Section */}
+                    {/* Pure Overall Stats Section */}
                     <div className="mt-6 border border-HowTo-Cards-border rounded-md p-4 lg:max-w-[40rem] mx-auto">
                       <h4 className="text-white font-bold text-xl lg:text-3xl border-b border-HowTo-Cards-border text-center">
-                        Overall Totals
+                        Overall Stats
                       </h4>
                       <div className="flex justify-between items-center lg:text-xl text-lg">
                         <p className="text-white mt-2">Total Tokens Bidded: </p>
@@ -1516,12 +1521,12 @@ function Dapp() {
                             <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                               Last Bid
                             </th>
-                            <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                            {/* <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                               First Bid Amount
                             </th>
                             <th className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                               Last Bid Amount
-                            </th>
+                            </th> */}
                           </tr>
                         </thead>
                         <tbody>
@@ -1541,7 +1546,7 @@ function Dapp() {
                                   {index + 1}
                                 </td>
                                 <td className="p-2 md:p-3 border-r border-HowTo-Cards-border text-Purple">
-                                  {formattedEntry.player}
+                                  {truncateAddress(formattedEntry.player)}
                                 </td>
                                 <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                   {formattedEntry.totalBids}
@@ -1558,12 +1563,12 @@ function Dapp() {
                                 <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                   {formattedEntry.lastBidTimestamp}
                                 </td>
-                                <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
+                                {/* <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                   {formattedEntry.firstBidAmount} {symbol}
                                 </td>
                                 <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                   {formattedEntry.lastBidAmount} {symbol}
-                                </td>
+                                </td> */}
                               </motion.tr>
                             );
                           })}
