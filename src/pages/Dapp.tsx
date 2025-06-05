@@ -337,7 +337,7 @@ function Dapp() {
         divideFunct(
           95,
           Number(entry.totalTokensBidded) /
-            Math.pow(10, decimals ? Number(decimals) : 18)
+          Math.pow(10, decimals ? Number(decimals) : 18)
         )
       );
     }, 0);
@@ -349,7 +349,7 @@ function Dapp() {
       return (
         total +
         Number(entry.totalUSDBidded) /
-          Math.pow(10, decimals ? Number(decimals) : 18)
+        Math.pow(10, decimals ? Number(decimals) : 18)
       );
     }, 0);
   }, [leaderboard, decimals]);
@@ -450,25 +450,28 @@ function Dapp() {
   }, [refetchMostRecentBids]);
 
   useEffect(() => {
-    if (getMostRecentBids && !isLoadingMostRecentBids) {
-      // Assume mostRecentBid is an array with the latest bid data in the first element.
-      // Adjust destructuring according to the returned structure.
+    if (getMostRecentBids && !isLoadingMostRecentBids && getMostRecentBids.length > 0) {
+      // Check if the array has elements and the first element has the expected properties
       const latestBid = getMostRecentBids[0];
-      const { bidder, timestamp } = latestBid; // adjust property names as needed
 
-      // Calculate how many seconds ago the bid occurred
-      const ago = timeAgo(Number(timestamp));
-      // Format the notification message
-      const formattedMessage = `${shortenAddress(bidder)} bidded | ${ago} `;
+      // Add null checks for the latestBid and its properties
+      if (latestBid && latestBid.bidder && latestBid.timestamp) {
+        const { bidder, timestamp } = latestBid;
 
-      // Set notification which will be visible until cleared
-      setNotification(formattedMessage);
+        // Calculate how many seconds ago the bid occurred
+        const ago = timeAgo(Number(timestamp));
+        // Format the notification message
+        const formattedMessage = `${shortenAddress(bidder)} bidded | ${ago} `;
 
-      // Clear the notification after 5 seconds (or any time you choose)
-      const timer = setTimeout(() => {
-        setNotification("");
-      }, 5000);
-      return () => clearTimeout(timer);
+        // Set notification which will be visible until cleared
+        setNotification(formattedMessage);
+
+        // Clear the notification after 5 seconds (or any time you choose)
+        const timer = setTimeout(() => {
+          setNotification("");
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
     }
   }, [getMostRecentBids, isLoadingMostRecentBids]);
 
@@ -962,11 +965,10 @@ function Dapp() {
                     }
                     onClick={handleBidProcess}
                     className={`cursor-pointer px-10 py-3 rounded-full font-bold text-[18px] transition-all duration-300 ease-in-out
-        ${
-          isGameExpired
-            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-            : "bg-Purple hover:bg-opacity-80 text-white"
-        }
+        ${isGameExpired
+                        ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                        : "bg-Purple hover:bg-opacity-80 text-white"
+                      }
       `}
                   >
                     {isGameExpired || getTimeRemaining === 0n ? (
@@ -1003,8 +1005,8 @@ function Dapp() {
                     {lastTxnType === "approval"
                       ? "Approval confirmed!"
                       : lastTxnType === "bid"
-                      ? "Bid confirmed!"
-                      : ""}
+                        ? "Bid confirmed!"
+                        : ""}
                   </p>
                   <p className="text-sm text-gray-300">Transaction: {txHash}</p>
                 </motion.div>
@@ -1051,18 +1053,17 @@ function Dapp() {
           {["tab1", "tab2", "tab3"].map((tab) => (
             <button
               key={tab}
-              className={`px-4 py-2 rounded-full font-medium transition-all ${
-                activeTab === tab
+              className={`px-4 py-2 rounded-full font-medium transition-all ${activeTab === tab
                   ? "bg-white text-black"
                   : "bg-HowTo-Cards-Background border border-HowTo-Cards-border text-Light-Gray hover:bg-HowTo-Cards-border"
-              }`}
+                }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab === "tab1"
                 ? "Bid History"
                 : tab === "tab2"
-                ? "Leaderboard"
-                : "All Winners"}
+                  ? "Leaderboard"
+                  : "All Winners"}
             </button>
           ))}
         </div>
@@ -1285,10 +1286,10 @@ function Dapp() {
                               {isLoadingTokenBurnt
                                 ? "fetching..."
                                 : isConnected &&
-                                  burntTokens.toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  })}{" "}
+                                burntTokens.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}{" "}
                               {symbol}
                             </p>
                           </div>
@@ -1794,7 +1795,7 @@ function Dapp() {
                 {isLoadingRoundWinner
                   ? " "
                   : isConnected && roundWinner
-                  ? (() => {
+                    ? (() => {
                       const formattedWinner =
                         roundWinner && Number(roundWinner[0]) > 0
                           ? formatRoundWinner(roundWinner)
@@ -1806,22 +1807,22 @@ function Dapp() {
                         <p>Round Ended: {timeAgo(Number(roundWinner?.[6]))}</p>
                       );
                     })()
-                  : pureRoundWinner
-                  ? (() => {
-                      const formattedWinner =
-                        pureRoundWinner && Number(pureRoundWinner[0]) > 0
-                          ? formatRoundWinner(pureRoundWinner)
-                          : null;
-                      if (!formattedWinner) {
-                        return "";
-                      }
-                      return (
-                        <p>
-                          Round Ended: {timeAgo(Number(pureRoundWinner?.[6]))}
-                        </p>
-                      );
-                    })()
-                  : ""}
+                    : pureRoundWinner
+                      ? (() => {
+                        const formattedWinner =
+                          pureRoundWinner && Number(pureRoundWinner[0]) > 0
+                            ? formatRoundWinner(pureRoundWinner)
+                            : null;
+                        if (!formattedWinner) {
+                          return "";
+                        }
+                        return (
+                          <p>
+                            Round Ended: {timeAgo(Number(pureRoundWinner?.[6]))}
+                          </p>
+                        );
+                      })()
+                      : ""}
               </div>
             </div>
           )}
