@@ -26,6 +26,7 @@ import {
 import { motion } from "framer-motion";
 import DappNavbar from "@/sections/DappNavbar";
 import MainHeading from "@/components/MainHeading";
+
 // import chip from "../assets/chip.png";
 // import { statsCards } from "../constants/statscards";
 // import StatsCard from "@/components/StatsCard";
@@ -450,25 +451,30 @@ function Dapp() {
   }, [refetchMostRecentBids]);
 
   useEffect(() => {
-    if (getMostRecentBids && !isLoadingMostRecentBids) {
+    if (
+      getMostRecentBids &&
+      !isLoadingMostRecentBids &&
+      getMostRecentBids.length > 0
+    ) {
       // Assume mostRecentBid is an array with the latest bid data in the first element.
       // Adjust destructuring according to the returned structure.
       const latestBid = getMostRecentBids[0];
-      const { bidder, timestamp } = latestBid; // adjust property names as needed
+      if (latestBid && latestBid.bidder && latestBid.timestamp) {
+        const { bidder, timestamp } = latestBid;
 
-      // Calculate how many seconds ago the bid occurred
-      const ago = timeAgo(Number(timestamp));
-      // Format the notification message
-      const formattedMessage = `${shortenAddress(bidder)} bidded | ${ago} `;
+        // Calculate how many seconds ago the bid occurred
+        const ago = timeAgo(Number(timestamp));
+        // Format the notification message
+        const formattedMessage = `${shortenAddress(bidder)} bidded | ${ago} `;
+        // Set notification which will be visible until cleared
+        setNotification(formattedMessage);
 
-      // Set notification which will be visible until cleared
-      setNotification(formattedMessage);
-
-      // Clear the notification after 5 seconds (or any time you choose)
-      const timer = setTimeout(() => {
-        setNotification("");
-      }, 5000);
-      return () => clearTimeout(timer);
+        // Clear the notification after 5 seconds (or any time you choose)
+        const timer = setTimeout(() => {
+          setNotification("");
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
     }
   }, [getMostRecentBids, isLoadingMostRecentBids]);
 

@@ -7,6 +7,7 @@ import Navbar from "@/sections/Navbar";
 import ReadyToPlay from "@/sections/ReadyToPlay";
 import Statistics from "@/sections/Statistics";
 import Tokenomics from "@/sections/Tokenomics";
+import { pureGameActive } from "@/web3/readContracts";
 
 const Home = () => {
   return (
@@ -17,7 +18,8 @@ const Home = () => {
         <div className="size-[20rem] bg-[#A510D6] rounded-[50%] absolute left-0 top-0 blur-[200px]" />
         <div className="size-[20rem] bg-[#da6efd] rounded-[50%] absolute right-0 bottom-0 blur-[200px]" />
         <HowItWorks />
-        <Statistics />
+        {pureGameActive && <Statistics />}
+        {/* <Statistics /> */}
         <HowTowin />
         <Tokenomics />
       </div>

@@ -95,7 +95,7 @@ const DappStatistics = ({
                 `${Math.round(
                   Number(getPotValue) / 10 ** (decimals ? Number(decimals) : 18)
                 ).toLocaleString()} | $${Math.round(
-                  Number(getPotValueInUSD) /
+                  Number(getPotValueInUSD || 0) /
                     10 ** (decimals ? Number(decimals) : 18)
                 ).toLocaleString()}`
               ) : (
