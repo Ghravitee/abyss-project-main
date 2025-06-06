@@ -37,7 +37,6 @@ import {
   fetchPureRandomWinnersByRound,
 } from "@/web3/readContracts";
 import BidNotification from "@/web3/BidNotification";
-import { get } from "http";
 
 function Dapp() {
   // State for errors, processing status, and transaction type.
