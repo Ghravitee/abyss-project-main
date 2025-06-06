@@ -2,7 +2,6 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import {
   useAccount,
-  // useChainId,
   useWriteContract,
   useReadContract,
   useWaitForTransactionReceipt,
@@ -11,8 +10,6 @@ import {
 import {
   TOKEN_ABI,
   POT_ABI,
-  // testChainID,
-  // mainnetID,
   ABYSS_POT_CA,
   NULL_ADDR,
 } from "../web3/config";
@@ -26,14 +23,6 @@ import {
 import { motion } from "framer-motion";
 import DappNavbar from "@/sections/DappNavbar";
 import MainHeading from "@/components/MainHeading";
-
-// import chip from "../assets/chip.png";
-// import { statsCards } from "../constants/statscards";
-// import StatsCard from "@/components/StatsCard";
-// import Leaderboard from "@/components/Leaderboard";
-// import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-// import "react-circular-progressbar/dist/styles.css";
-// import CountdownTimer from "@/components/CountdownTimer";
 import search from "../assets/search.png";
 import Converter from "@/components/Converter";
 import DappStatistics from "@/sections/DappStats";
@@ -76,10 +65,6 @@ function Dapp() {
   const [pureRandomWinnersByRound, setPureRandomWinnersByRound] =
     useState<any>(null);
   const [notification, setNotification] = useState("");
-
-  // const chainId = useChainId();
-  // const isSepoliaTestnet = chainId === testChainID;
-  // const isETHMainnet = chainId === mainnetID;
 
   // Write and transaction hooks.
   const { data: txHash, isPending, error, writeContract } = useWriteContract();
@@ -310,7 +295,7 @@ function Dapp() {
     return {
       totalBids: stats.totalBids.toString(),
       totalTokensBidded: (Number(stats.totalTokensBidded) / 10 ** 18).toFixed(
-        4
+        2
       ),
       totalUSDBidded: (Number(stats.totalUSDBidded) / 10 ** 18).toFixed(2),
       firstBidTimestamp: new Date(
@@ -338,7 +323,7 @@ function Dapp() {
         divideFunct(
           95,
           Number(entry.totalTokensBidded) /
-            Math.pow(10, decimals ? Number(decimals) : 18)
+          Math.pow(10, decimals ? Number(decimals) : 18)
         )
       );
     }, 0);
@@ -350,7 +335,7 @@ function Dapp() {
       return (
         total +
         Number(entry.totalUSDBidded) /
-          Math.pow(10, decimals ? Number(decimals) : 18)
+        Math.pow(10, decimals ? Number(decimals) : 18)
       );
     }, 0);
   }, [leaderboard, decimals]);
@@ -506,15 +491,125 @@ function Dapp() {
     return bidAMount_s * tokenUSDPrice;
   }, [getAbyssUSDPrice]);
 
-  // Function to handle approval.
+
+  const validateBidTransaction = useCallback(() => {
+    const errors = [];
+
+    // 1. Check if game is active
+    if (!isLoadingGameActive && !gameActive) {
+      errors.push("Game is currently inactive");
+    }
+
+    // 2. Check if game/round has expired
+    if (!isLoadingIsGameExpired && isGameExpired) {
+      errors.push("Current round has expired");
+    }
+
+    // 3. Check if timer has expired (getTimeRemaining === 0)
+    if (!isLoadingTimeRemaining && getTimeRemaining === 0n) {
+      errors.push("Bid timer has expired");
+    }
+
+    // 4. Check user's token balance
+    if (!isLoadingBalance && balance !== undefined && bidAmount !== undefined) {
+      if (balance < bidAmount) {
+        errors.push(`Insufficient token balance. You need ${formatTokenAmount(bidAmount, decimals)} ${symbol} but only have ${formatTokenAmount(balance, decimals)} ${symbol}`);
+      }
+    }
+
+    // 5. Check allowance (this is already handled by needsApproval, but good to validate)
+    if (!isLoadingAllowance && allowance !== undefined && bidAmount !== undefined && !needsApproval) {
+      if (allowance < bidAmount) {
+        errors.push("Token allowance is insufficient");
+      }
+    }
+
+    // 6. Check if wallet is connected
+    if (!isConnected) {
+      errors.push("Please connect your wallet");
+    }
+
+    // 7. Check if required data is loaded
+    if (isLoadingBidAmount || isLoadingBalance || isLoadingAllowance) {
+      errors.push("Loading transaction data, please wait...");
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors: errors
+    };
+  }, [
+    gameActive,
+    isLoadingGameActive,
+    isGameExpired,
+    isLoadingIsGameExpired,
+    getTimeRemaining,
+    isLoadingTimeRemaining,
+    balance,
+    isLoadingBalance,
+    bidAmount,
+    isLoadingBidAmount,
+    allowance,
+    isLoadingAllowance,
+    needsApproval,
+    isConnected,
+    decimals,
+    symbol
+  ]);
+
+  // // Function to handle approval.
+  // const handleApprove = useCallback(() => {
+  //   setErrorMsg("");
+  //   if (isLoadingAllowance || isLoadingBidAmount || isPending || isConfirming)
+  //     return;
+  //   if (bidAmount === undefined) {
+  //     setErrorMsg("Unable to check bid amount. Please try again.");
+  //     return;
+  //   }
+  //   // Mark this txn as an approval txn.
+  //   setLastTxnType("approval");
+  //   writeContract({
+  //     ...TOKEN_ABI,
+  //     functionName: "approve",
+  //     args: [ABYSS_POT_CA as `0x${string}`, bidAmount as unknown as bigint],
+  //   });
+  //   setIsProcessingTxn(true);
+  // }, [
+  //   isLoadingAllowance,
+  //   isLoadingBidAmount,
+  //   isPending,
+  //   isConfirming,
+  //   bidAmount,
+  //   writeContract,
+  // ]);
+
+  // Enhanced approval handler with validation
   const handleApprove = useCallback(() => {
     setErrorMsg("");
-    if (isLoadingAllowance || isLoadingBidAmount || isPending || isConfirming)
+
+    // Validate before proceeding
+    const validation = validateBidTransaction();
+    if (!validation.isValid) {
+      setErrorMsg(validation.errors.join(". "));
       return;
+    }
+
+    if (isLoadingAllowance || isLoadingBidAmount || isPending || isConfirming) {
+      setErrorMsg("Transaction already in progress or data still loading");
+      return;
+    }
+
     if (bidAmount === undefined) {
       setErrorMsg("Unable to check bid amount. Please try again.");
       return;
     }
+
+    // Additional validation specific to approval
+    if (allowance !== undefined && allowance >= bidAmount) {
+      setErrorMsg("Approval not needed - you already have sufficient allowance");
+      return;
+    }
+
     // Mark this txn as an approval txn.
     setLastTxnType("approval");
     writeContract({
@@ -524,18 +619,57 @@ function Dapp() {
     });
     setIsProcessingTxn(true);
   }, [
+    validateBidTransaction,
     isLoadingAllowance,
     isLoadingBidAmount,
     isPending,
     isConfirming,
     bidAmount,
+    allowance,
     writeContract,
   ]);
 
-  // Function to handle bidding.
+  // // Function to handle bidding.
+  // const handleBid = useCallback(() => {
+  //   setErrorMsg("");
+  //   if (isPending || isConfirming) return;
+  //   // Mark this txn as a bid txn.
+  //   setLastTxnType("bid");
+  //   writeContract({
+  //     ...POT_ABI,
+  //     functionName: "registerBid",
+  //   });
+  //   setIsProcessingTxn(true);
+  // }, [isPending, isConfirming, writeContract]);
+
+  // Enhanced bid handler with validation
   const handleBid = useCallback(() => {
     setErrorMsg("");
-    if (isPending || isConfirming) return;
+
+    // Validate before proceeding
+    const validation = validateBidTransaction();
+    if (!validation.isValid) {
+      setErrorMsg(validation.errors.join(". "));
+      return;
+    }
+
+    if (isPending || isConfirming) {
+      setErrorMsg("Transaction already in progress");
+      return;
+    }
+
+    // Additional validation specific to bidding
+    if (needsApproval) {
+      setErrorMsg("Please approve token spending first");
+      return;
+    }
+
+    // Double-check allowance before bidding
+    if (allowance !== undefined && bidAmount !== undefined && allowance < bidAmount) {
+      setErrorMsg("Token allowance is insufficient. Please approve first.");
+      return;
+    }
+
     // Mark this txn as a bid txn.
     setLastTxnType("bid");
     writeContract({
@@ -543,16 +677,78 @@ function Dapp() {
       functionName: "registerBid",
     });
     setIsProcessingTxn(true);
-  }, [isPending, isConfirming, writeContract]);
+  }, [
+    validateBidTransaction,
+    isPending,
+    isConfirming,
+    needsApproval,
+    allowance,
+    bidAmount,
+    writeContract,
+  ]);
 
-  // Combined process: either approve or bid based on current state.
+  // // Combined process: either approve or bid based on current state.
+  // const handleBidProcess = useCallback(() => {
+  //   if (needsApproval) {
+  //     handleApprove();
+  //   } else {
+  //     handleBid();
+  //   }
+  // }, [needsApproval, handleApprove, handleBid]);
+
+  // Enhanced combined process with comprehensive validation
   const handleBidProcess = useCallback(() => {
+    setErrorMsg("");
+
+    // Always validate first
+    const validation = validateBidTransaction();
+    if (!validation.isValid) {
+      setErrorMsg(validation.errors.join(". "));
+      return;
+    }
+
+    // Additional pre-transaction checks
+    if (isPending || isConfirming || isProcessingTxn) {
+      setErrorMsg("Please wait for the current transaction to complete");
+      return;
+    }
+
     if (needsApproval) {
       handleApprove();
     } else {
       handleBid();
     }
-  }, [needsApproval, handleApprove, handleBid]);
+  }, [
+    validateBidTransaction,
+    needsApproval,
+    handleApprove,
+    handleBid,
+    isPending,
+    isConfirming,
+    isProcessingTxn,
+    bidAmountUSDValue,
+    bidAmount,
+    decimals,
+    symbol
+  ]);
+
+  // Add a function to get detailed validation status for UI display
+  const getValidationStatus = useCallback(() => {
+    const validation = validateBidTransaction();
+
+    return {
+      ...validation,
+      canApprove: isConnected && !needsApproval && balance >= bidAmount && gameActive && !isGameExpired,
+      canBid: isConnected && !needsApproval && balance >= bidAmount && gameActive && !isGameExpired && getTimeRemaining > 0n,
+      needsConnection: !isConnected,
+      needsApproval: needsApproval,
+      hasInsufficientBalance: balance !== undefined && bidAmount !== undefined && balance < bidAmount,
+      gameInactive: !gameActive,
+      gameExpired: isGameExpired,
+      timerExpired: getTimeRemaining === 0n
+    };
+  }, [validateBidTransaction, isConnected, needsApproval, balance, bidAmount, gameActive, isGameExpired, getTimeRemaining]);
+
 
   // When the transaction is confirmed, refresh values and reset processing flag.
   useEffect(() => {
@@ -644,10 +840,28 @@ function Dapp() {
   // Compute the button text.
   // When processing, show "Processing..." (or "Confirming...").
   // Otherwise, show "Approve & Bid" if approval is needed, or "Place Bid" otherwise.
+
+  // const getButtonText = () => {
+  //   if (isPending) return "Processing...";
+  //   if (isConfirming) return "Confirming...";
+  //   return needsApproval ? "Approve & Bid" : "Place Bid";
+  // };
+
+
+  // Enhanced button text with more detailed status
   const getButtonText = () => {
     if (isPending) return "Processing...";
     if (isConfirming) return "Confirming...";
-    return needsApproval ? "Approve & Bid" : "Place Bid";
+
+    const status = getValidationStatus();
+
+    if (!isConnected) return "Connect Your Wallet";
+    if (status.gameInactive) return "Game  is Inactive";
+    if (status.gameExpired || status.timerExpired) return "Round has Ended";
+    if (status.hasInsufficientBalance) return "Insufficient Bid Balance";
+    if (needsApproval) return "Approve & Bid";
+
+    return "Place Bid";
   };
 
   //   if (!isLoadingGameActive && !gameActive) {
@@ -946,6 +1160,8 @@ function Dapp() {
               className="bg-HowItWorks-Cards-Background border border-Purple rounded-2xl px-4 py-6 h-fit"
             >
               <MainHeading addon="text-[18px] md:text-[20px] lg:text-[24px]" />
+
+
               <Converter
                 isLoadingBidAmount={isLoadingBidAmount}
                 isConnected={isConnected}
@@ -954,66 +1170,151 @@ function Dapp() {
                 symbol={symbol}
                 bidAmountUSDValue={bidAmountUSDValue}
                 bidButton={
-                  <button
-                    disabled={
-                      isPending ||
-                      isConfirming ||
-                      isLoadingAllowance ||
-                      isLoadingBidAmount ||
-                      isProcessingTxn ||
-                      isGameExpired ||
-                      getTimeRemaining === 0n
-                    }
-                    onClick={handleBidProcess}
-                    className={`cursor-pointer px-10 py-3 rounded-full font-bold text-[18px] transition-all duration-300 ease-in-out
-        ${
-          isGameExpired
-            ? "bg-gray-500 text-gray-300 cursor-not-allowed"
-            : "bg-Purple hover:bg-opacity-80 text-white"
-        }
-      `}
-                  >
-                    {isGameExpired || getTimeRemaining === 0n ? (
-                      <>
-                        <span className="mr-2">🚫</span> {getButtonText()}
-                      </>
-                    ) : (
-                      getButtonText()
+                  <div className="w-full">
+                    {/* Validation Status Display */}
+                    {(() => {
+                      const status = getValidationStatus();
+
+                      if (status.isValid) {
+                        return (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-green-900/50 border border-green-500 text-green-300 px-4 py-3 rounded-lg mb-4"
+                          >
+                            <div className="flex items-center">
+                              <span className="text-green-400 mr-2">✅</span>
+                              <span>Ready to {needsApproval ? 'approve and bid' : 'place bid'}</span>
+                            </div>
+                          </motion.div>
+                        );
+                      }
+
+                      return (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg mb-4"
+                        >
+                          <div className="flex items-start">
+                            <span className="text-red-400 mr-2 mt-0.5">⚠️</span>
+                            <div>
+                              <p className="font-semibold mb-2">Cannot place bid:</p>
+                              <ul className="text-sm space-y-1">
+                                {status.errors.map((error, index) => (
+                                  <li key={index} className="flex items-center">
+                                    <span className="w-1 h-1 bg-red-400 rounded-full mr-2"></span>
+                                    {error}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })()}
+
+                    {/* Enhanced Bid Button */}
+                    <button
+                      disabled={
+                        !isConnected ||
+                        !getValidationStatus().isValid ||
+                        isPending ||
+                        isConfirming ||
+                        isLoadingAllowance ||
+                        isLoadingBidAmount ||
+                        isProcessingTxn
+                      }
+                      onClick={handleBidProcess}
+                      className={`cursor-pointer px-10 py-3 rounded-full font-bold text-[18px] transition-all duration-300 ease-in-out w-full
+          ${!isConnected
+                          ? "bg-blue-600 hover:bg-blue-700 text-white"
+                          : getValidationStatus().isValid && !isPending && !isConfirming && !isProcessingTxn
+                            ? "bg-Purple hover:bg-opacity-80 text-white hover:transform hover:scale-105"
+                            : "bg-gray-500 text-gray-300 cursor-not-allowed opacity-50"
+                        }
+        `}
+                    >
+                      {(isPending || isConfirming) && (
+                        <span className="mr-2 animate-spin">⏳</span>
+                      )}
+                      {getValidationStatus().gameExpired || getValidationStatus().timerExpired ? (
+                        <>
+                          <span className="mr-2">🚫</span> {getButtonText()}
+                        </>
+                      ) : (
+                        getButtonText()
+                      )}
+                    </button>
+
+                    {/* Transaction Progress */}
+                    {(isPending || isConfirming || txHash) && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-4 space-y-2"
+                      >
+                        {isPending && (
+                          <div className="bg-yellow-900/50 border border-yellow-500 text-yellow-300 px-4 py-3 rounded-lg">
+                            <div className="flex items-center">
+                              <span className="animate-spin mr-2">⏳</span>
+                              <span>Transaction pending - please sign in your wallet...</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {isConfirming && txHash && (
+                          <div className="bg-blue-900/50 border border-blue-500 text-blue-300 px-4 py-3 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <span className="animate-pulse mr-2">🔄</span>
+                                <span>Confirming transaction...</span>
+                              </div>
+                              <a
+                                href={`https://etherscan.io/tx/${txHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 underline text-sm"
+                              >
+                                View on Etherscan
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {isConfirmed && txHash && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="bg-green-900/50 border border-green-500 text-green-300 px-4 py-3 rounded-lg"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <span className="mr-2">✅</span>
+                                <span>
+                                  {lastTxnType === "approval" ? "Approval confirmed!" : "Bid confirmed!"}
+                                </span>
+                              </div>
+                              <a
+                                href={`https://etherscan.io/tx/${txHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-400 hover:text-green-300 underline text-sm"
+                              >
+                                View Transaction
+                              </a>
+                            </div>
+                          </motion.div>
+                        )}
+                      </motion.div>
                     )}
-                  </button>
+                  </div>
                 }
               />
-              {/* Transaction Status Messages */}
-              {isConfirming && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-HowItWorks-Cards-Background border-l-4 border-yellow-500 text-yellow-400 px-4 py-2 rounded-lg shadow-md text-center"
-                >
-                  <p>⏳ Waiting for confirmation...</p>
-                  <p className="text-sm text-gray-300">Transaction: {txHash}</p>
-                </motion.div>
-              )}
-
-              {isConfirmed && txHash && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-HowItWorks-Cards-Background border-l-4 border-green-500 text-green-400 px-4 py-2 rounded-lg shadow-md text-center"
-                >
-                  <p>
-                    {lastTxnType === "approval"
-                      ? "Approval confirmed!"
-                      : lastTxnType === "bid"
-                      ? "Bid confirmed!"
-                      : ""}
-                  </p>
-                  <p className="text-sm text-gray-300">Transaction: {txHash}</p>
-                </motion.div>
-              )}
-
               {/* Error Messages */}
               {errorMsg && (
                 <motion.div
@@ -1055,18 +1356,17 @@ function Dapp() {
           {["tab1", "tab2", "tab3"].map((tab) => (
             <button
               key={tab}
-              className={`px-4 py-2 rounded-full font-medium transition-all ${
-                activeTab === tab
-                  ? "bg-white text-black"
-                  : "bg-HowTo-Cards-Background border border-HowTo-Cards-border text-Light-Gray hover:bg-HowTo-Cards-border"
-              }`}
+              className={`px-4 py-2 rounded-full font-medium transition-all ${activeTab === tab
+                ? "bg-white text-black"
+                : "bg-HowTo-Cards-Background border border-HowTo-Cards-border text-Light-Gray hover:bg-HowTo-Cards-border"
+                }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab === "tab1"
                 ? "Bid History"
                 : tab === "tab2"
-                ? "Leaderboard"
-                : "All Winners"}
+                  ? "Leaderboard"
+                  : "All Winners"}
             </button>
           ))}
         </div>
@@ -1289,10 +1589,10 @@ function Dapp() {
                               {isLoadingTokenBurnt
                                 ? "fetching..."
                                 : isConnected &&
-                                  burntTokens.toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  })}{" "}
+                                burntTokens.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}{" "}
                               {symbol}
                             </p>
                           </div>
@@ -1798,7 +2098,7 @@ function Dapp() {
                 {isLoadingRoundWinner
                   ? " "
                   : isConnected && roundWinner
-                  ? (() => {
+                    ? (() => {
                       const formattedWinner =
                         roundWinner && Number(roundWinner[0]) > 0
                           ? formatRoundWinner(roundWinner)
@@ -1810,22 +2110,22 @@ function Dapp() {
                         <p>Round Ended: {timeAgo(Number(roundWinner?.[6]))}</p>
                       );
                     })()
-                  : pureRoundWinner
-                  ? (() => {
-                      const formattedWinner =
-                        pureRoundWinner && Number(pureRoundWinner[0]) > 0
-                          ? formatRoundWinner(pureRoundWinner)
-                          : null;
-                      if (!formattedWinner) {
-                        return "";
-                      }
-                      return (
-                        <p>
-                          Round Ended: {timeAgo(Number(pureRoundWinner?.[6]))}
-                        </p>
-                      );
-                    })()
-                  : ""}
+                    : pureRoundWinner
+                      ? (() => {
+                        const formattedWinner =
+                          pureRoundWinner && Number(pureRoundWinner[0]) > 0
+                            ? formatRoundWinner(pureRoundWinner)
+                            : null;
+                        if (!formattedWinner) {
+                          return "";
+                        }
+                        return (
+                          <p>
+                            Round Ended: {timeAgo(Number(pureRoundWinner?.[6]))}
+                          </p>
+                        );
+                      })()
+                      : ""}
               </div>
             </div>
           )}
