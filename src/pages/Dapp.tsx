@@ -937,8 +937,6 @@ function Dapp() {
                     No bid history found.
                   </p>
                 )}
-                isGameExpired: {isGameExpired}
-                GetTimeRemaining: {getTimeRemaining}
               </motion.div>
             </motion.div>
             <motion.div
