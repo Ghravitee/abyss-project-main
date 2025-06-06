@@ -3,6 +3,21 @@ import telegram from "../assets/telegram.png";
 import twitter from "../assets/twitter.png";
 import gitbook from "../assets/gitbook.png";
 
+const footerItems = [
+  {
+    icon: twitter,
+    link: "https://x.com/AbyssPot",
+  },
+  {
+    icon: telegram,
+    link: "https://t.me/Abysspot",
+  },
+  {
+    icon: gitbook,
+    link: "https://abyss-5.gitbook.io/abyss-docs",
+  },
+];
+
 const Footer = () => {
   return (
     <motion.footer
@@ -24,10 +39,10 @@ const Footer = () => {
           </div>
           {/* Social links */}
           <div className="flex items-center space-x-4 mb-[32px]">
-            {[telegram, twitter, gitbook].map((icon, index) => (
+            {footerItems.map(({ icon, link }, index) => (
               <motion.a
                 key={index}
-                href="#"
+                href={link}
                 whileHover={{ scale: 1.2 }}
                 className="flex items-center justify-center size-[34px] rounded-full bg-Purple"
               >
