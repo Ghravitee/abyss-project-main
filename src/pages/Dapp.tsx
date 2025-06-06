@@ -37,6 +37,7 @@ import {
   fetchPureRandomWinnersByRound,
 } from "@/web3/readContracts";
 import BidNotification from "@/web3/BidNotification";
+import { get } from "http";
 
 function Dapp() {
   // State for errors, processing status, and transaction type.
@@ -746,8 +747,64 @@ function Dapp() {
   ]);
 
   // Add a function to get detailed validation status for UI display
+  //   const getValidationStatus = useCallback(() => {
+  //     const validation = validateBidTransaction();
+  // if (balance === undefined || bidAmount === undefined) {
+  //     return {
+  //       ...validation,
+  //       canApprove:
+  //         isConnected &&
+  //         !needsApproval &&
+  //         balance >= bidAmount &&
+  //         gameActive &&
+  //         !isGameExpired,
+  //       canBid:
+  //         isConnected &&
+  //         !needsApproval &&
+  //         balance >= bidAmount &&
+  //         gameActive &&
+  //         !isGameExpired &&
+  //         getTimeRemaining > 0n,
+  //       needsConnection: !isConnected,
+  //       needsApproval: needsApproval,
+  //       hasInsufficientBalance:
+  //         balance !== undefined && bidAmount !== undefined && balance < bidAmount,
+  //       gameInactive: !gameActive,
+  //       gameExpired: isGameExpired,
+  //       timerExpired: getTimeRemaining === 0n,
+  //     };
+  //     }
+  //   }, [
+  //     validateBidTransaction,
+  //     isConnected,
+  //     needsApproval,
+  //     balance,
+  //     bidAmount,
+  //     gameActive,
+  //     isGameExpired,
+  //     getTimeRemaining,
+  //   ]);
+
   const getValidationStatus = useCallback(() => {
     const validation = validateBidTransaction();
+
+    if (
+      balance === undefined ||
+      bidAmount === undefined ||
+      getTimeRemaining === undefined
+    ) {
+      return {
+        ...validation,
+        canApprove: false,
+        canBid: false,
+        needsConnection: !isConnected,
+        needsApproval: needsApproval,
+        hasInsufficientBalance: true,
+        gameInactive: !gameActive,
+        gameExpired: isGameExpired,
+        timerExpired: getTimeRemaining === 0n,
+      };
+    }
 
     return {
       ...validation,
@@ -766,8 +823,7 @@ function Dapp() {
         getTimeRemaining > 0n,
       needsConnection: !isConnected,
       needsApproval: needsApproval,
-      hasInsufficientBalance:
-        balance !== undefined && bidAmount !== undefined && balance < bidAmount,
+      hasInsufficientBalance: balance < bidAmount,
       gameInactive: !gameActive,
       gameExpired: isGameExpired,
       timerExpired: getTimeRemaining === 0n,
