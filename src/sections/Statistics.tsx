@@ -49,20 +49,19 @@ const Statistics = () => {
           <StatsCard
             cardImage={statsCards[4].cardImage}
             title="Total Pot Value (ABYSS | USD)"
-            description={`${Math.round(
-              Number(
-                pureOverallTokensBidded.toLocaleString(undefined, {
-                  minimumFractionDigits: 4,
-                  maximumFractionDigits: 4,
-                })
-              )
-            )} | $${pureOverallUSDBidded.toLocaleString(undefined, {
+            description={`${Number(pureOverallTokensBidded).toLocaleString(
+              undefined,
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )} | $${Number(pureOverallUSDBidded).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}`}
-            tooltipInfo="This represents the monetary value of the pot in U.S. dollars. 
-"
+            tooltipInfo="This represents the monetary value of the pot in U.S. dollars."
           />
+
           <StatsCard
             cardImage={statsCards[5].cardImage}
             title="Total Tokens Burnt (ABYSS | USD)"
