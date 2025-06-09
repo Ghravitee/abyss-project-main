@@ -1960,7 +1960,13 @@ function Dapp() {
                                   {formattedEntry.totalBids}
                                 </td>
                                 <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
-                                  {formattedEntry.totalTokensBidded} {symbol}
+                                  {Number(
+                                    formattedEntry.totalTokensBidded
+                                  ).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })}{" "}
+                                  {symbol}
                                 </td>
                                 <td className="p-2 md:p-3 border-r border-HowTo-Cards-border">
                                   ${formattedEntry.totalUSDBidded}
